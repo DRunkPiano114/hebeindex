@@ -1,0 +1,28 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title?: string
+}
+
+const { title = '田馥甄档案库' } = Astro.props
+---
+
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main style="max-width: 960px; margin: 0 auto; padding: 0 24px;">
+      <slot />
+    </main>
+
+    <footer style="margin-top: 80px; padding: 24px; text-align: center; border-top: 1px solid var(--divider); color: var(--text-secondary); font-size: 12px;">
+      数据来源：YouTube · Bilibili · Google Search &nbsp;·&nbsp; 持续更新
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+---
+import Layout from '../components/Layout.astro'
+import ContentTable from '../components/ContentTable'
+import { loadCategory } from '../data/loader'
+
+const singles = loadCategory(3)
+const collabs = loadCategory(8)
+---
+
+<Layout title="歌曲与合作 · 田馥甄档案库">
+  <section style="padding: 48px 0 32px;">
+    <h2 class="font-display" style="font-size: 32px; font-weight: 400; margin-bottom: 4px;">歌曲与合作</h2>
+    <p style="color: var(--text-secondary); font-size: 13px;">影视单曲 · 合唱合作</p>
+  </section>
+
+  <div id="tab-nav" style="display: flex; gap: 0; border-bottom: 1px solid var(--divider); margin-bottom: 32px;">
+    <button id="tab-singles" onclick="switchTab('singles')"
+      style="padding: 10px 20px; border: none; background: none; font-size: 14px; cursor: pointer; border-bottom: 2px solid var(--accent); color: var(--text-primary); transition: all 0.15s ease;">
+      影视单曲 <span style="color: var(--text-secondary); font-size: 12px;">{singles.length}</span>
+    </button>
+    <button id="tab-collabs" onclick="switchTab('collabs')"
+      style="padding: 10px 20px; border: none; background: none; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); transition: all 0.15s ease;">
+      合唱合作 <span style="color: var(--text-secondary); font-size: 12px;">{collabs.length}</span>
+    </button>
+  </div>
+
+  <div id="panel-singles">
+    <ContentTable client:load items={singles} searchPlaceholder="搜索影视单曲..." />
+  </div>
+  <div id="panel-collabs" style="display: none;">
+    <ContentTable client:load items={collabs} searchPlaceholder="搜索合唱合作..." />
+  </div>
+</Layout>
+
+<script>
+  function switchTab(tab: string) {
+    const singles = document.getElementById('panel-singles')!
+    const collabs = document.getElementById('panel-collabs')!
+    const tabSingles = document.getElementById('tab-singles')!
+    const tabCollabs = document.getElementById('tab-collabs')!
+
+    if (tab === 'singles') {
+      singles.style.display = 'block'
+      collabs.style.display = 'none'
+      tabSingles.style.borderBottomColor = 'var(--accent)'
+      tabSingles.style.color = 'var(--text-primary)'
+      tabCollabs.style.borderBottomColor = 'transparent'
+      tabCollabs.style.color = 'var(--text-secondary)'
+    } else {
+      singles.style.display = 'none'
+      collabs.style.display = 'block'
+      tabSingles.style.borderBottomColor = 'transparent'
+      tabSingles.style.color = 'var(--text-secondary)'
+      tabCollabs.style.borderBottomColor = 'var(--accent)'
+      tabCollabs.style.color = 'var(--text-primary)'
+    }
+  }
+
+  if (window.location.hash === '#collabs') {
+    switchTab('collabs')
+  }
+
+  (window as any).switchTab = switchTab
+</script>

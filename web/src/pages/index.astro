@@ -1,0 +1,89 @@
+---
+import Layout from '../components/Layout.astro'
+import { loadCategory } from '../data/loader'
+
+const counts = {
+  personalMV:  loadCategory(2).length,
+  singles:     loadCategory(3).length,
+  concerts:    loadCategory(4).length,
+  variety:     loadCategory(5).length,
+  interviews:  loadCategory(6).length,
+  sheMV:       loadCategory(7).length,
+  collabs:     loadCategory(8).length,
+}
+const total = Object.values(counts).reduce((a, b) => a + b, 0)
+
+const cards = [
+  { href: '/mv',       label: '个人 MV',   count: counts.personalMV,  sub: 'Official MV & Lyric Video' },
+  { href: '/mv#she',   label: 'S.H.E MV', count: counts.sheMV,       sub: 'S.H.E 时期全作品' },
+  { href: '/concerts', label: '演唱会',    count: counts.concerts,    sub: 'Concert & Live' },
+  { href: '/shows',    label: '综艺节目',  count: counts.variety,     sub: 'TV Shows & Variety' },
+  { href: '/songs',    label: '影视单曲',  count: counts.singles,     sub: 'OST & Singles' },
+  { href: '/shows#interviews', label: '采访访谈', count: counts.interviews, sub: 'Interviews & Press' },
+  { href: '/songs#collabs',    label: '合唱合作', count: counts.collabs,    sub: 'Collabs & Features' },
+]
+---
+
+<Layout title="田馥甄档案库 · Hebe Tien Archive">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; padding-top: 72px; margin-bottom: 80px;">
+    <!-- Left: Category cards -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--divider); border: 1px solid var(--divider);">
+      {cards.map(({ href, label, count, sub }) => (
+        <a href={href} style="display: block; padding: 28px 24px; background: var(--bg); transition: background-color 0.15s ease;"
+          onmouseover="this.style.backgroundColor='#F0EDE8'"
+          onmouseout="this.style.backgroundColor='var(--bg)'">
+          <div style="font-size: 11px; letter-spacing: 0.08em; color: var(--text-secondary); margin-bottom: 8px;">
+            {sub}
+          </div>
+          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">{label}</div>
+          <div class="font-display" style="font-size: 28px; color: var(--accent);">
+            {count.toLocaleString()}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Right: Hero + Stats -->
+    <div>
+      <p style="font-size: 12px; letter-spacing: 0.12em; color: var(--text-secondary); margin-bottom: 16px; font-family: 'Inter', sans-serif;">
+        ARCHIVE · 田馥甄
+      </p>
+      <h1 class="font-display" style="font-size: clamp(48px, 8vw, 72px); font-weight: 400; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.01em;">
+        田馥甄
+      </h1>
+      <p class="font-display" style="font-size: clamp(18px, 3vw, 24px); color: var(--text-secondary); font-style: italic; margin-bottom: 24px;">
+        Hebe Tien
+      </p>
+      <div style="width: 48px; height: 1px; background: var(--divider); margin-bottom: 24px;"></div>
+      <p style="color: var(--text-secondary); font-size: 13px; letter-spacing: 0.04em; margin-bottom: 40px;">
+        1983 · 台湾 · 华语流行 &nbsp;·&nbsp; 个人出道 2010 &nbsp;·&nbsp; 第 32 届金曲奖最佳女歌手
+      </p>
+
+      <!-- Stats row -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider);">
+        {[
+          { value: total.toLocaleString(), label: '收录总数' },
+          { value: 'YouTube + Bilibili', label: '双平台' },
+          { value: '2026', label: '持续更新' },
+        ].map(({ value, label }) => (
+          <div style="padding: 24px 0; text-align: center;">
+            <div class="font-display" style="font-size: 22px; font-weight: 500; margin-bottom: 4px;">{value}</div>
+            <div style="font-size: 11px; letter-spacing: 0.08em; color: var(--text-secondary);">{label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile responsive: single column, hero on top -->
+  <style>
+    @media (max-width: 768px) {
+      div[style*="grid-template-columns: 1fr 1fr; gap: 48px"] {
+        display: flex !important;
+        flex-direction: column-reverse !important;
+        gap: 40px !important;
+        padding-top: 48px !important;
+      }
+    }
+  </style>
+</Layout>

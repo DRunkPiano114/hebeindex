@@ -1,0 +1,16 @@
+---
+import Layout from '../components/Layout.astro'
+import ContentTable from '../components/ContentTable'
+import { loadCategory } from '../data/loader'
+
+const concerts = loadCategory(4)
+---
+
+<Layout title="演唱会 · 田馥甄档案库">
+  <section style="padding: 48px 0 32px;">
+    <h2 class="font-display" style="font-size: 32px; font-weight: 400; margin-bottom: 4px;">演唱会</h2>
+    <p style="color: var(--text-secondary); font-size: 13px;">Concert · Live · Tour</p>
+  </section>
+
+  <ContentTable client:load items={concerts} searchPlaceholder="搜索演唱会..." />
+</Layout>
