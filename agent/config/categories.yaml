@@ -1,0 +1,180 @@
+# Category definitions with waterfall classification rules.
+# Evaluated top-down — first match wins.
+
+categories:
+  - name: "sheMV"
+    file_id: 7
+    label: "S.H.E MV"
+    rules:
+      - id: "she_mv_official"
+        description: "Official S.H.E MV from label channel"
+        conditions:
+          channel_is_official: true
+          title_contains_any: ["S.H.E", "SHE"]
+          title_contains_any_2: ["MV", "Official", "官方"]
+          title_not_contains_any: ["live", "演唱会", "concert"]
+
+  - name: "personalMV"
+    file_id: 2
+    label: "个人MV"
+    rules:
+      - id: "personal_mv_official"
+        description: "Official Hebe MV from label channel"
+        conditions:
+          channel_is_official: true
+          title_contains_any: ["MV", "Official Music Video", "官方"]
+          title_not_contains_any: ["S.H.E", "SHE", "live", "演唱会", "concert"]
+          max_duration_seconds: 600
+      - id: "personal_mv_official_long"
+        description: "Official Hebe MV (longer, e.g. short film MVs)"
+        conditions:
+          channel_is_official: true
+          title_contains_any: ["MV", "Official Music Video"]
+          title_not_contains_any: ["S.H.E", "SHE", "live", "演唱会", "concert", "full", "全场"]
+          max_duration_seconds: 900
+
+  - name: "concerts"
+    file_id: 4
+    label: "演唱会"
+    rules:
+      - id: "concert_keywords"
+        description: "Concert by title keywords"
+        conditions:
+          title_contains_any:
+            - "演唱会"
+            - "演唱會"
+            - "concert"
+            - "巡演"
+            - "巡迴"
+            - "音乐会"
+            - "音樂會"
+            - "全场"
+            - "全場"
+      - id: "concert_tour_names"
+        description: "Known tour/concert names"
+        conditions:
+          title_contains_any:
+            - "如果世界巡迴"
+            - "IF ONLY"
+            - "IF+"
+            - "一一巡迴"
+            - "田调"
+            - "Live in Life"
+            - "To My Love"
+            - "小夜曲"
+            - "渺小 纪录"
+            - "渺小 微巡"
+            - "演唱会的日常"
+            - "奇幻乐园"
+            - "移动城堡"
+            - "爱而为一"
+            - "2gether4ever"
+            - "Together Forever"
+            - "十七音乐会"
+      - id: "concert_long_duration"
+        description: "Very long video likely a concert"
+        conditions:
+          min_duration_seconds: 1800
+          title_not_contains_any: ["合集", "合辑", "compilation", "playlist"]
+
+  - name: "collabs"
+    file_id: 8
+    label: "合唱合作"
+    rules:
+      - id: "collab_keywords"
+        description: "Collaboration by keywords"
+        conditions:
+          title_contains_any:
+            - "合唱"
+            - "feat"
+            - "Feat"
+            - "ft."
+            - "Ft."
+            - "合作"
+            - "duet"
+      - id: "collab_known_artists"
+        description: "Contains Hebe + known collaborator name"
+        conditions:
+          title_contains_collaborator: true
+
+  - name: "variety"
+    file_id: 5
+    label: "综艺节目"
+    rules:
+      - id: "variety_show_names"
+        description: "Known variety show names"
+        conditions:
+          title_contains_any:
+            - "梦想的声音"
+            - "夢想的聲音"
+            - "康熙来了"
+            - "康熙來了"
+            - "快乐大本营"
+            - "快樂大本營"
+            - "金曲奖"
+            - "金曲獎"
+            - "跨年"
+            - "天天向上"
+            - "非常静距离"
+            - "非常靜距離"
+            - "KKBOX 风云榜"
+            - "KKBOX風雲榜"
+            - "Hito流行音乐奖"
+            - "Hito流行音樂獎"
+            - "我想和你唱"
+            - "娱乐百分百"
+            - "娛樂百分百"
+            - "鲁豫有约"
+            - "魯豫有約"
+            - "330音乐田"
+            - "颠峰歌会"
+            - "巔峰歌會"
+      - id: "variety_partner_channel"
+        description: "From known variety partner channel"
+        conditions:
+          channel_is_media_partner: true
+          title_not_contains_any: ["MV", "Official", "专访", "專訪", "interview", "采访", "採訪"]
+
+  - name: "interviews"
+    file_id: 6
+    label: "采访访谈"
+    rules:
+      - id: "interview_keywords"
+        description: "Interview by keywords"
+        conditions:
+          title_contains_any:
+            - "采访"
+            - "採訪"
+            - "专访"
+            - "專訪"
+            - "interview"
+            - "Interview"
+            - "访谈"
+            - "訪談"
+
+  - name: "singles"
+    file_id: 3
+    label: "单曲与影视歌"
+    rules:
+      - id: "singles_ost"
+        description: "OST or soundtrack keywords"
+        conditions:
+          title_contains_any:
+            - "OST"
+            - "主题曲"
+            - "主題曲"
+            - "插曲"
+            - "片尾曲"
+            - "片头曲"
+            - "片頭曲"
+            - "电影"
+            - "電影"
+            - "电视剧"
+            - "電視劇"
+      - id: "singles_official_remaining"
+        description: "Official channel content not matching above, 2-8min"
+        conditions:
+          channel_is_official: true
+          min_duration_seconds: 120
+          max_duration_seconds: 480
+          title_not_contains_any: ["MV", "Official", "live", "演唱会", "演唱會", "concert"]
