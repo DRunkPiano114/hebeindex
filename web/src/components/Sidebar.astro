@@ -47,14 +47,16 @@ const { items, total, activeKey = items[0]?.key } = Astro.props
   </nav>
 
   <div class="sidebar-footer">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHbcYJ8m76x9RDZDkE3NERTlxDb7okm8o5-kfP4x8S4m2OsQ/viewform" target="_blank" rel="noopener">
-      {strings.feedbackForm}
-      <span class="sidebar-footer-desc">{strings.feedbackFormDesc}</span>
-    </a>
-    <a href="https://github.com/DRunkPiano114/hebeindex/issues/new" target="_blank" rel="noopener">
-      {strings.feedbackGithub}
-      <span class="sidebar-footer-desc">{strings.feedbackGithubDesc}</span>
-    </a>
+    <div class="sidebar-footer-title">{strings.feedbackTitle}</div>
+    <div class="sidebar-footer-desc">{strings.feedbackDesc}</div>
+    <div class="sidebar-footer-links">
+      <a class="sidebar-footer-btn" href="https://github.com/DRunkPiano114/hebeindex/issues/new" target="_blank" rel="noopener">
+        {strings.feedbackGithub}
+      </a>
+      <a class="sidebar-footer-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfHbcYJ8m76x9RDZDkE3NERTlxDb7okm8o5-kfP4x8S4m2OsQ/viewform" target="_blank" rel="noopener">
+        {strings.feedbackForm}
+      </a>
+    </div>
   </div>
 </aside>
 
@@ -96,29 +98,46 @@ const { items, total, activeKey = items[0]?.key } = Astro.props
   .sidebar-footer {
     padding: 12px 20px;
     border-top: 1px solid var(--divider);
+  }
+
+  .sidebar-footer-title {
     font-size: 11px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .sidebar-footer a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.15s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-
-  .sidebar-footer a:hover {
-    color: var(--accent);
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
   }
 
   .sidebar-footer-desc {
     font-size: 10px;
+    color: var(--text-secondary);
     opacity: 0.7;
+    margin-bottom: 6px;
   }
+
+  .sidebar-footer-links {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sidebar-footer-btn {
+    flex: 1;
+    display: block;
+    padding: 6px 0;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    font-size: 10px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .sidebar-footer-btn:hover {
+    background-color: var(--accent);
+    color: #fff;
+  }
+
 
   .sidebar-item {
     display: flex;

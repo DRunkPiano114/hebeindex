@@ -40,10 +40,10 @@ export const strings = {
   tableHeaderPlays: '播放量',
   showCount: (shown: number, total: number) => `顯示 ${shown} 條，共 ${total} 條`,
   unverifiedTooltip: '連結未驗證',
-  feedbackForm: '意見回饋（Google 表單）',
-  feedbackGithub: '問題回報（GitHub Issues）',
-  feedbackFormDesc: '補充遺漏影片、更正錯誤資料',
-  feedbackGithubDesc: '回報網站 Bug、提出功能建議',
+  feedbackTitle: '意見回饋',
+  feedbackDesc: '補充遺漏影片、更正錯誤資料、回報 Bug、提出建議',
+  feedbackGithub: 'GitHub Issues',
+  feedbackForm: 'Google 表單',
 
   // Number formatting
   yi: '億',
