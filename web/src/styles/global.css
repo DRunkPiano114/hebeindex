@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600&family=Noto+Sans+TC:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap');
 
 @import "tailwindcss";
 
 :root {
   --bg: #F5F2EE;
+  --sidebar-bg: #EFEAE4;
   --text-primary: #1C1917;
   --text-secondary: #78716C;
   --accent: #B45309;
@@ -15,7 +16,7 @@
 html {
   background-color: var(--bg);
   color: var(--text-primary);
-  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-family: 'Inter', 'Noto Sans TC', sans-serif;
   font-size: 14px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -27,7 +28,7 @@ body {
 }
 
 .font-display {
-  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-family: 'Playfair Display', 'Noto Serif TC', serif;
 }
 
 a {

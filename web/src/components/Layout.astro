@@ -1,15 +1,16 @@
 ---
 import '../styles/global.css'
+import { strings } from '../i18n/strings'
 
 interface Props {
   title?: string
 }
 
-const { title = '田馥甄档案库' } = Astro.props
+const { title = strings.defaultTitle } = Astro.props
 ---
 
 <!doctype html>
-<html lang="zh-Hans">
+<html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,12 +18,50 @@ const { title = '田馥甄档案库' } = Astro.props
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <main style="max-width: 960px; margin: 0 auto; padding: 0 24px;">
-      <slot />
-    </main>
-
-    <footer style="margin-top: 80px; padding: 24px; text-align: center; border-top: 1px solid var(--divider); color: var(--text-secondary); font-size: 12px;">
-      数据来源：YouTube · Bilibili · Google Search &nbsp;·&nbsp; 持续更新
-    </footer>
+    <div class="app-layout">
+      <slot name="sidebar" />
+      <div class="app-main">
+        <slot />
+        <footer class="app-footer">
+          {strings.footerText} &nbsp;·&nbsp; {strings.footerUpdate}
+        </footer>
+      </div>
+    </div>
   </body>
 </html>
+
+<style>
+  .app-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .app-main {
+    padding: 0 32px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-footer {
+    margin-top: auto;
+    padding: 24px 0;
+    text-align: center;
+    border-top: 1px solid var(--divider);
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .app-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .app-main {
+      padding: 0 16px;
+    }
+  }
+</style>
