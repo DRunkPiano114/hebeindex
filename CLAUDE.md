@@ -28,6 +28,13 @@ uv run python pipeline.py --phase 3       # format → output/
 uv run python agent.py                    # LLM-orchestrated mode
 uv run python agent.py --resume           # resume from checkpoint
 
+# Reclassify existing data (by content, not search query origin)
+uv run python reclassify.py --apply       # rules + LLM, write to processed/
+uv run python reclassify.py --dry-run     # stats only, no file writes
+uv run python reclassify.py               # rules + LLM, write to reclassified/
+uv run python reclassify.py --no-llm      # rules only, skip LLM fallback
+uv run python reclassify.py --workers 8   # custom parallel LLM workers (default: 12)
+
 # Tests
 pytest tests/
 pytest tests/test_tools.py

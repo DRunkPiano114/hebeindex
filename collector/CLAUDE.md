@@ -33,6 +33,15 @@ uv run python pipeline.py --phase 3       # LLM format → output/
 uv run python pipeline.py --no-llm        # phase 3 with template fallback
 ```
 
+**Reclassify existing data (by content, not search query origin):**
+```bash
+uv run python reclassify.py --apply       # rules + LLM, write to processed/
+uv run python reclassify.py --dry-run     # stats only, no file writes
+uv run python reclassify.py               # rules + LLM, write to reclassified/
+uv run python reclassify.py --no-llm      # rules only, skip LLM fallback
+uv run python reclassify.py --workers 8   # custom parallel LLM workers (default: 12)
+```
+
 **Tests:**
 ```bash
 pytest tests/
