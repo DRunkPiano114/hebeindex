@@ -123,8 +123,12 @@ export default function ContentTable({ items, searchPlaceholder = strings.search
   const ytCount = useMemo(() => items.filter(i => i.source === 'youtube').length, [items])
   const blCount = useMemo(() => items.filter(i => i.source === 'bilibili').length, [items])
 
+  const [loadingUrl, setLoadingUrl] = useState<string | null>(null)
+
   const handleRowClick = useCallback((url: string) => {
+    setLoadingUrl(url)
     window.open(url, '_blank', 'noopener,noreferrer')
+    setTimeout(() => setLoadingUrl(null), 2000)
   }, [])
 
   const btnStyle = (active: boolean) => ({
@@ -248,7 +252,16 @@ export default function ContentTable({ items, searchPlaceholder = strings.search
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FAFAF9')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <PlatformBadge source={item.source} />
+                {loadingUrl === item.url ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24 }}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}>
+                      <circle cx="8" cy="8" r="6" stroke="var(--divider)" strokeWidth="2" />
+                      <path d="M14 8a6 6 0 0 0-6-6" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                ) : (
+                  <PlatformBadge source={item.source} />
+                )}
                 <span style={{
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',

@@ -41,3 +41,7 @@ a {
 a:hover {
   color: var(--accent);
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
