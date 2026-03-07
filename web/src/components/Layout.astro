@@ -22,20 +22,6 @@ const { title = strings.defaultTitle } = Astro.props
       <slot name="sidebar" />
       <div class="app-main">
         <slot />
-        <footer class="app-footer">
-          <div>{strings.footerText} &nbsp;·&nbsp; {strings.footerUpdate}</div>
-          <div class="footer-links">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHbcYJ8m76x9RDZDkE3NERTlxDb7okm8o5-kfP4x8S4m2OsQ/viewform" target="_blank" rel="noopener">
-              <span class="footer-link-label">{strings.feedbackForm}</span>
-              <span class="footer-link-desc">{strings.feedbackFormDesc}</span>
-            </a>
-            <span class="footer-link-sep">&middot;</span>
-            <a href="https://github.com/DRunkPiano114/hebeindex/issues/new" target="_blank" rel="noopener">
-              <span class="footer-link-label">{strings.feedbackGithub}</span>
-              <span class="footer-link-desc">{strings.feedbackGithubDesc}</span>
-            </a>
-          </div>
-        </footer>
       </div>
     </div>
   </body>
@@ -45,64 +31,20 @@ const { title = strings.defaultTitle } = Astro.props
   .app-layout {
     display: grid;
     grid-template-columns: 220px 1fr;
-    min-height: 100vh;
+    height: 100vh;
     max-width: 1200px;
     margin: 0 auto;
+    overflow: hidden;
   }
 
   .app-main {
-    padding: 0 32px;
+    padding: 0 32px 24px;
     min-width: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
-  .app-footer {
-    margin-top: auto;
-    padding: 24px 0;
-    text-align: center;
-    border-top: 1px solid var(--divider);
-    color: var(--text-secondary);
-    font-size: 12px;
-  }
-
-  .footer-links {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.15s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .footer-links a:hover {
-    color: var(--accent);
-  }
-
-  .footer-link-label {
-    font-size: 12px;
-  }
-
-  .footer-link-desc {
-    font-size: 10px;
-    opacity: 0.7;
-  }
-
-  .footer-link-sep {
-    color: var(--text-secondary);
-    opacity: 0.4;
-    align-self: flex-start;
-    margin-top: 2px;
-  }
 
   @media (max-width: 768px) {
     .app-layout {

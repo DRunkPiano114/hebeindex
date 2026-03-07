@@ -128,19 +128,23 @@ export default function ContentTable({ items, searchPlaceholder = strings.search
   }, [])
 
   const btnStyle = (active: boolean) => ({
-    padding: '4px 12px',
+    display: 'inline-flex' as const,
+    alignItems: 'center' as const,
+    gap: 4,
+    padding: '6px 12px',
     borderRadius: 4,
     border: '1px solid',
     borderColor: active ? 'var(--accent)' : 'var(--divider)',
     backgroundColor: active ? 'var(--accent)' : 'transparent',
     color: active ? '#fff' : 'var(--text-secondary)',
     fontSize: 12,
+    lineHeight: 1,
     cursor: 'pointer',
     transition: 'all 0.15s ease',
   })
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
       {/* Controls */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 16 }}>
         <input
@@ -162,7 +166,7 @@ export default function ContentTable({ items, searchPlaceholder = strings.search
         <div style={{ display: 'flex', gap: 6 }}>
           {(['all', 'youtube', 'bilibili'] as Platform[]).map(p => (
             <button key={p} style={btnStyle(platform === p)} onClick={() => setPlatform(p)}>
-              {p === 'all' ? `${strings.filterAll} ${items.length}` : p === 'youtube' ? (<><svg width="16" height="11" viewBox="0 0 20 14" fill="none" style={{ verticalAlign: '-1px', marginRight: 4 }}><rect width="20" height="14" rx="3" fill={platform === 'youtube' ? '#fff' : '#FF0000'} /><path d="M8 4v6l5-3-5-3z" fill={platform === 'youtube' ? '#FF0000' : '#fff'} /></svg>{ytCount}</>) : (<><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ verticalAlign: '-3px', marginRight: 4 }}><path d="M6.15 4.56a.7.7 0 0 1 .98-.14l2.87 2.1h4l2.87-2.1a.7.7 0 0 1 .84 1.12L16.2 6.52h1.3A3.5 3.5 0 0 1 21 10.02v5.5a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 15.52v-5.5a3.5 3.5 0 0 1 3.5-3.5h1.3L6.29 5.54a.7.7 0 0 1-.14-.98zM6.5 8.02a2 2 0 0 0-2 2v5.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5.5a2 2 0 0 0-2-2h-11z" fill={platform === 'bilibili' ? '#fff' : '#00A1D6'}/><path d="M8.5 11.52a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1zM15.5 11.52a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1z" fill={platform === 'bilibili' ? '#fff' : '#00A1D6'}/></svg>{blCount}</>)}
+              {p === 'all' ? `${strings.filterAll} ${items.length}` : p === 'youtube' ? (<><svg width="16" height="11" viewBox="0 0 20 14" fill="none" style={{ display: 'block', flexShrink: 0 }}><rect width="20" height="14" rx="3" fill={platform === 'youtube' ? '#fff' : '#FF0000'} /><path d="M8 4v6l5-3-5-3z" fill={platform === 'youtube' ? '#FF0000' : '#fff'} /></svg>{ytCount}</>) : (<><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ display: 'block', flexShrink: 0 }}><path d="M6.15 4.56a.7.7 0 0 1 .98-.14l2.87 2.1h4l2.87-2.1a.7.7 0 0 1 .84 1.12L16.2 6.52h1.3A3.5 3.5 0 0 1 21 10.02v5.5a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 15.52v-5.5a3.5 3.5 0 0 1 3.5-3.5h1.3L6.29 5.54a.7.7 0 0 1-.14-.98zM6.5 8.02a2 2 0 0 0-2 2v5.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5.5a2 2 0 0 0-2-2h-11z" fill={platform === 'bilibili' ? '#fff' : '#00A1D6'}/><path d="M8.5 11.52a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1zM15.5 11.52a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1z" fill={platform === 'bilibili' ? '#fff' : '#00A1D6'}/></svg>{blCount}</>)}
             </button>
           ))}
         </div>
@@ -210,7 +214,7 @@ export default function ContentTable({ items, searchPlaceholder = strings.search
       </div>
 
       {/* Virtual list */}
-      <div ref={parentRef} style={{ height: 600, overflowY: 'auto' }}>
+      <div ref={parentRef} style={{ flex: 1, overflowY: 'auto' }}>
         <div style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}>
           {rowVirtualizer.getVirtualItems().map(virtualRow => {
             const item = filtered[virtualRow.index]
