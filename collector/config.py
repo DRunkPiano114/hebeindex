@@ -12,7 +12,7 @@ MAX_TOKENS = 65536
 #   Tier 1 (primary)  : Gemini 3.1 Pro Preview
 #   Tier 2            : Anthropic Claude Sonnet
 #   Tier 3 (fallback) : OpenAI
-OPENROUTER_MODEL_GEMINI  = "openrouter/google/gemini-3.1-pro-preview"
+OPENROUTER_MODEL_GEMINI  = "openrouter/google/gemini-3.1-flash-lite-preview"
 OPENROUTER_MODEL_SONNET  = "openrouter/anthropic/claude-sonnet-4-6"
 OPENROUTER_MODEL_OPENAI  = "openrouter/openai/gpt-5.2-2025-12-11"
 
