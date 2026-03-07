@@ -1,0 +1,464 @@
+artist:
+  names:
+    primary: "田馥甄"
+    english: "Hebe Tien"
+    aliases: ["Hebe", "馥甄"]
+  official_channels:
+    - "華研國際"
+    - "HIM International Music"
+    - "HIM International Music Inc."
+    - "HIMSHERO"
+    - "Hebe Tien's Official Channel田馥甄官方專屬頻道"
+    - "Hebe Tien - Topic"
+    - "田馥甄 - 主題"
+    - "田馥甄Hebe"
+    - "S.H.E - Topic"
+  labels: ["華研國際", "HIM International Music Inc."]
+
+group:
+  name: "S.H.E"
+  aliases: ["SHE", "S.H.E."]
+  members:
+    - "Selina/任家萱"
+    - "Hebe/田馥甄"
+    - "Ella/陳嘉樺"
+  member_names: ["任家萱", "Selina", "陳嘉樺", "陈嘉桦", "Ella"]
+
+discography:
+  solo_albums:
+    - name: "To Hebe"
+      year: 2010
+      tracks:
+        - "寂寞寂寞就好"
+        - "LOVE!"
+        - "还是要幸福"
+        - "我想我不会爱你"
+        - "你就不要想起我"
+        - "我对不起我"
+        - "看我的"
+        - "给小孩"
+        - "To Hebe"
+    - name: "My Love"
+      year: 2011
+      tracks:
+        - "魔鬼中的天使"
+        - "请你给我好一点的情敌"
+        - "你太猖狂"
+        - "My Love"
+        - "妳"
+        - "要说什么"
+    - name: "渺小"
+      year: 2013
+      tracks:
+        - "渺小"
+        - "不醉不会"
+        - "矛盾"
+        - "烏托邦"
+        - "离岛"
+        - "终身大事"
+    - name: "日常"
+      year: 2016
+      tracks:
+        - "日常"
+        - "爱着爱着就永远"
+        - "人间烟火"
+        - "独善其身"
+        - "灵魂伴侣"
+        - "超级玛丽"
+        - "无事生非"
+        - "无用"
+        - "念念有词"
+        - "什么哪里"
+        - "慢舞"
+        - "身体都知道"
+    - name: "无人知晓"
+      year: 2020
+      tracks:
+        - "无人知晓"
+        - "悬日"
+        - "皆可"
+        - "一一"
+        - "底里歇斯"
+        - "花花世界"
+        - "无常"
+        - "先知"
+        - "或是一首歌"
+        - "田"
+        - "人什么的最麻烦了"
+        - "讽刺的情书"
+        - "影子的影子"
+
+  ost_singles:
+    - name: "小幸运"
+      source: "我的少女時代"
+      year: 2015
+    - name: "爱了很久的朋友"
+      source: "後來的我們"
+      year: 2018
+    - name: "看淡"
+      source: "一把青"
+      year: 2015
+    - name: "不晚"
+      source: "深夜食堂"
+      year: 2017
+    - name: "墨绿的夜"
+      source: ""
+      year: 2019
+    - name: "先知"
+      source: "怪胎"
+      year: 2020
+    - name: "皆可"
+      source: "庆余年"
+      year: 2020
+    - name: "自己的房间"
+      source: "Live in Life"
+      year: 2018
+    - name: "口袋的温度"
+      source: "爱上两个我"
+      year: 2014
+    - name: "我想我不会爱你"
+      source: "必娶女人"
+      year: 2015
+    - name: "余波荡漾"
+      source: "飞鱼高校生"
+      year: 2016
+    - name: "最暖的忧伤"
+      source: ""
+      year: 2016
+    - name: "姐"
+      source: "追婚日记"
+      year: 2015
+    - name: "十万嬉皮"
+      source: ""
+      year: 2013
+    - name: "爱的预告"
+      source: ""
+      year: 2014
+    - name: "热情"
+      source: ""
+      year: 2013
+    - name: "美女与野兽"
+      source: ""
+      year: 2017
+    - name: "现在是什么时辰了"
+      source: ""
+      year: 2018
+    - name: "摩天轮"
+      source: "真命天女"
+      year: 2006
+    - name: "来不及"
+      source: "斗牛要不要"
+      year: 2007
+    - name: "一周的朋友"
+      source: "一周的朋友"
+      year: 2022
+    - name: "乘着无人光影的远行"
+      source: ""
+      year: 2023
+    - name: "一二三"
+      source: "田调"
+      year: 2025
+
+  variety_show_singles:
+    - name: "黑色柳丁"
+      source: "梦想的声音"
+      year: 2016
+    - name: "凡人歌"
+      source: "梦想的声音"
+      year: 2016
+    - name: "痒"
+      source: "梦想的声音"
+      year: 2017
+    - name: "Play我呸"
+      source: "梦想的声音"
+      year: 2017
+    - name: "演员"
+      source: "梦想的声音"
+      year: 2017
+    - name: "无与伦比的美丽"
+      source: "梦想的声音"
+      year: 2017
+    - name: "当你"
+      source: "梦想的声音 巅峰歌会"
+      year: 2017
+    - name: "追梦人"
+      source: "梦想的声音 巅峰歌会"
+      year: 2017
+
+  concerts:
+    - name: "Love! To Hebe 音乐会"
+      years: "2010"
+      venues: ["Legacy Taipei"]
+    - name: "To My Love 慶功音樂會"
+      years: "2011"
+      venues: ["台大体育馆"]
+    - name: "如果世界巡迴演唱會"
+      years: "2014-2017"
+      aliases: ["如果演唱会", "IF ONLY", "IF+"]
+      venues: ["台北小巨蛋", "高雄巨蛋", "香港红馆", "上海", "北京", "新加坡"]
+    - name: "一一巡迴演唱會"
+      years: "2020-2023"
+      aliases: ["一一演唱会"]
+      venues: ["台北小巨蛋", "高雄"]
+    - name: "田调 Live in Life 野地小巡演"
+      years: "2025"
+      aliases: ["田调"]
+      venues: ["台南盐田", "高雄卫武营", "屏东恒春", "南投埔里暨南大学"]
+    - name: "渺小 纪录影音"
+      years: "2014"
+      aliases: []
+    - name: "渺小 微巡听歌会"
+      years: "2013"
+      aliases: []
+    - name: "小夜曲 音乐舞台剧"
+      years: "2016-2017"
+      aliases: ["小夜曲 莎妹"]
+    - name: "演唱会的日常"
+      years: "2017"
+      aliases: []
+
+  she_concerts:
+    - name: "SHE 奇幻乐园演唱会"
+      years: "2004"
+    - name: "SHE 移动城堡演唱会"
+      years: "2006"
+    - name: "SHE 爱而为一世界巡迴演唱会"
+      years: "2010"
+    - name: "SHE 2gether4ever Together Forever 世界巡演"
+      years: "2013-2014"
+    - name: "SHE 十七音乐会"
+      years: "2018"
+
+  variety_shows:
+    - name: "梦想的声音"
+      network: "浙江衛視"
+    - name: "我想和你唱"
+      network: "湖南卫视"
+    - name: "康熙来了"
+      network: "中天电视"
+    - name: "快乐大本营"
+      network: "湖南卫视"
+    - name: "天天向上"
+      network: "湖南卫视"
+    - name: "非常静距离"
+      network: ""
+    - name: "金曲奖"
+      network: ""
+    - name: "KKBOX 风云榜"
+      network: ""
+    - name: "Hito流行音乐奖"
+      network: ""
+    - name: "娱乐百分百"
+      network: "三立电视"
+    - name: "鲁豫有约"
+      network: ""
+    - name: "330音乐田"
+      network: ""
+
+  collaborators:
+    - name: "吴青峰"
+      songs: ["你在烦恼什么", "讽刺的情书", "十七", "妳"]
+    - name: "林宥嘉"
+      songs: ["给小孩", "寂寞寂寞就好"]
+    - name: "魏如萱"
+      songs: []
+    - name: "五月天"
+      songs: []
+    - name: "阿信"
+      songs: ["爱情的模样"]
+    - name: "飞轮海"
+      songs: ["只对你有感觉"]
+    - name: "陈珊妮"
+      songs: ["离别曲"]
+    - name: "洪敬尧"
+      songs: ["老唱盘"]
+    - name: "井柏然"
+      songs: ["美女与野兽"]
+    - name: "韩红"
+      songs: ["魔鬼中的天使"]
+    - name: "许光汉"
+      songs: ["一日"]
+    - name: "安溥"
+      aliases: ["张悬"]
+      songs: ["如何", "最好的时光"]
+    - name: "蔡依林"
+      songs: ["刻在我心底的名字"]
+    - name: "苏运莹"
+      songs: ["野子"]
+    - name: "徐佳莹"
+      songs: ["双声道"]
+    - name: "Ella"
+      songs: ["公主Selina"]
+    - name: "薛之谦"
+      songs: ["演员"]
+    - name: "动力火车"
+      songs: ["爱到疯癫"]
+
+  she_mvs:
+    - "Super Star"
+    - "不想长大"
+    - "SHERO"
+    - "美丽新世界"
+    - "花又开好了"
+    - "恋人未满"
+    - "波斯猫"
+    - "永远都在"
+    - "十七"
+    - "下一站天后"
+    - "一眼万年"
+    - "怎么办"
+    - "花都开好了"
+    - "你快乐我随意"
+    - "候鸟"
+    - "你曾是少年"
+    - "热带雨林"
+    - "中国话"
+    - "天灰"
+    - "半糖主义"
+    - "我爱你"
+    - "触电"
+    - "他还是不懂"
+    - "沿海公路的出口"
+    - "Ring Ring Ring"
+    - "殊途"
+    - "星光"
+    - "痛快"
+    - "Remember"
+    - "爱呢"
+    - "听袁惟仁弹吉他"
+    - "宇宙小姐"
+    - "心还是热的"
+    - "完美Kasanova"
+    - "说你爱我"
+
+  western_artist_blacklist:
+    - "rick astley"
+    - "taylor swift"
+    - "ed sheeran"
+    - "adele"
+    - "beyonce"
+    - "beyoncé"
+    - "ariana grande"
+    - "billie eilish"
+    - "dua lipa"
+    - "lady gaga"
+    - "katy perry"
+    - "justin bieber"
+    - "bruno mars"
+    - "drake"
+    - "eminem"
+    - "rihanna"
+    - "shakira"
+    - "the weeknd"
+    - "post malone"
+    - "harry styles"
+    - "olivia rodrigo"
+    - "doja cat"
+    - "miley cyrus"
+    - "selena gomez"
+    - "charlie puth"
+    - "maroon 5"
+    - "coldplay"
+    - "imagine dragons"
+    - "one direction"
+    - "bts"
+    - "blackpink"
+    - "twice"
+    - "stray kids"
+    - "aespa"
+    - "newjeans"
+    - "ive"
+    - "nct"
+    - "exo"
+    - "red velvet"
+    - "tyler the creator"
+    - "frank ocean"
+    - "ofwgkta"
+    - "kanye west"
+    - "travis scott"
+    - "lana del rey"
+
+  other_chinese_artist_blacklist:
+    - "林俊杰"
+    - "林俊傑"
+    - "张惠妹"
+    - "張惠妹"
+    - "蔡依林"
+    - "周杰伦"
+    - "周杰倫"
+    - "王力宏"
+    - "陶喆"
+    - "萧敬腾"
+    - "蕭敬騰"
+    - "李荣浩"
+    - "李榮浩"
+    - "邓紫棋"
+    - "鄧紫棋"
+    - "华晨宇"
+    - "華晨宇"
+    - "薛之谦"
+    - "薛之謙"
+    - "毛不易"
+    - "周深"
+    - "张碧晨"
+    - "張碧晨"
+    - "李宇春"
+    - "张靓颖"
+    - "張靚穎"
+    - "黄丽玲"
+    - "黃麗玲"
+    - "A-Lin"
+    - "刘若英"
+    - "劉若英"
+    - "孙燕姿"
+    - "孫燕姿"
+    - "梁静茹"
+    - "梁靜茹"
+    - "王菲"
+    - "那英"
+    - "韩红"
+    - "韓紅"
+    - "谭维维"
+    - "譚維維"
+    - "汪峰"
+    - "李健"
+
+  wrong_context_patterns:
+    - "hebe tabachnik"
+    - "护舒宝"
+    - "護舒寶"
+    - "whisper pad"
+    - "always ultra"
+
+categories:
+  - id: 2
+    key: "personal_mv"
+    label: "個人MV"
+  - id: 3
+    key: "ost_singles"
+    label: "影視單曲"
+  - id: 4
+    key: "concerts"
+    label: "演唱會"
+  - id: 5
+    key: "variety"
+    label: "綜藝節目"
+  - id: 6
+    key: "interviews"
+    label: "採訪訪談"
+  - id: 7
+    key: "she_mv"
+    label: "S.H.E MV"
+  - id: 8
+    key: "collabs"
+    label: "合唱合作"
+
+classification:
+  priority:
+    - "personal_mv"
+    - "she_mv"
+    - "ost_singles"
+    - "collabs"
+    - "concerts"
+    - "variety"
+    - "interviews"
