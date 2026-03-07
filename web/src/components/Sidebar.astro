@@ -46,6 +46,16 @@ const { items, total, activeKey = items[0]?.key } = Astro.props
     ))}
   </nav>
 
+  <div class="sidebar-footer">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHbcYJ8m76x9RDZDkE3NERTlxDb7okm8o5-kfP4x8S4m2OsQ/viewform" target="_blank" rel="noopener">
+      {strings.feedbackForm}
+      <span class="sidebar-footer-desc">{strings.feedbackFormDesc}</span>
+    </a>
+    <a href="https://github.com/DRunkPiano114/hebeindex/issues/new" target="_blank" rel="noopener">
+      {strings.feedbackGithub}
+      <span class="sidebar-footer-desc">{strings.feedbackGithubDesc}</span>
+    </a>
+  </div>
 </aside>
 
 <!-- Mobile horizontal tab bar -->
@@ -81,6 +91,33 @@ const { items, total, activeKey = items[0]?.key } = Astro.props
   .sidebar-nav {
     flex: 1;
     padding: 12px 0;
+  }
+
+  .sidebar-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--divider);
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .sidebar-footer a:hover {
+    color: var(--accent);
+  }
+
+  .sidebar-footer-desc {
+    font-size: 10px;
+    opacity: 0.7;
   }
 
   .sidebar-item {
