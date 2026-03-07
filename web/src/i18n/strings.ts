@@ -1,7 +1,7 @@
 export const strings = {
   // Layout
-  siteTitle: '田馥甄檔案庫 · Hebe Tien Archive',
-  defaultTitle: '田馥甄檔案庫',
+  siteTitle: '田馥甄影音誌 · Hebe Tien Archive',
+  defaultTitle: '田馥甄影音誌',
   footerText: '資料來源：YouTube · Bilibili · Google Search',
   footerUpdate: '持續更新',
 
