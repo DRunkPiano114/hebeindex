@@ -227,6 +227,9 @@ export default function ContentTable({ items, searchPlaceholder = strings.search
                 data-index={virtualRow.index}
                 ref={rowVirtualizer.measureElement}
                 onClick={() => handleRowClick(item.url)}
+                data-umami-event="video-click"
+                data-umami-event-title={item.title}
+                data-umami-event-source={item.source}
                 style={{
                   position: 'absolute',
                   top: 0,
