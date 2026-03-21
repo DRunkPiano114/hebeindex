@@ -7,6 +7,13 @@ Usage:
     uv run python reclassify.py --no-llm               # rules only, skip LLM
     uv run python reclassify.py --dry-run              # stats only, no file writes
     uv run python reclassify.py --output-dir reclass/  # custom output directory
+
+Each classified item receives a confidence score (0.0-1.0) based on multiple signals:
+    - Title keyword match strength (exact vs partial)
+    - Source reliability (official channel vs random uploader)
+    - Duration appropriateness for category
+    - View count relative to artist average
+    - Whether classification came from rules vs LLM fallback
 """
 
 from __future__ import annotations
@@ -14,7 +21,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import re
 import sys
 from collections import Counter, defaultdict
@@ -206,7 +212,19 @@ class RuleClassifier:
         # Blacklists
         self.western_blacklist = [s.lower() for s in disco.get("western_artist_blacklist", [])]
         self.chinese_blacklist = disco.get("other_chinese_artist_blacklist", [])
-        self.wrong_context = [s.lower() for s in disco.get("wrong_context_patterns", [])]
+        _DEFAULT_NEGATIVE_PATTERNS = [
+            "reaction", "反應", "反应",
+            "翻唱", "cover version",
+            "教學", "tutorial",
+            "鈴聲", "铃声", "ringtone",
+            "karaoke", "ktv",
+            "piano cover", "guitar cover",
+            "drum cover", "bass cover",
+        ]
+        self.wrong_context = (
+            [s.lower() for s in disco.get("wrong_context_patterns", [])]
+            + [s.lower() for s in _DEFAULT_NEGATIVE_PATTERNS]
+        )
 
         # Known venues
         self.venues = ["小巨蛋", "红馆", "紅館", "巨蛋", "体育馆", "體育館",
@@ -620,6 +638,267 @@ class RuleClassifier:
 
 
 # ──────────────────────────────────────────────────────────────────────
+# Confidence scoring
+# ──────────────────────────────────────────────────────────────────────
+
+# Expected duration ranges per category (seconds): (min, ideal_min, ideal_max, max)
+DURATION_RANGES: dict[str, tuple[int, int, int, int]] = {
+    "personal_mv": (120, 180, 360, 480),
+    "she_mv": (120, 180, 360, 480),
+    "ost_singles": (120, 180, 360, 480),
+    "collabs": (120, 180, 420, 600),
+    "concerts": (300, 1800, 7200, 14400),
+    "variety": (120, 300, 5400, 7200),
+    "interviews": (60, 180, 3600, 7200),
+}
+
+# Strong rule reasons — these indicate high-confidence rule matches
+STRONG_RULE_REASONS = {
+    "rule1_official_mv",
+    "rule1_known_track_mv",
+    "rule2_she_mv",
+    "rule2_she_known_track_mv",
+    "rule3_ost_with_source",
+    "rule3_ost_official",
+    "rule4_collab_known_song",
+    "rule5_known_concert",
+    "rule5_she_concert",
+    "rule6_known_show",
+    "rule0_wrong_context",
+    "rule0_western_blacklist",
+    "rule0_chinese_blacklist",
+}
+
+# Medium rule reasons — decent match but less certain
+MEDIUM_RULE_REASONS = {
+    "rule1_known_track_broad",
+    "rule2_she_known_track_broad",
+    "rule3_ost_broad",
+    "rule3_variety_single",
+    "rule4_collab_pattern",
+    "rule5_concert_keyword",
+    "rule5_long_live",
+    "rule5_venue",
+    "rule6_tv_network",
+    "rule6_award_gala",
+    "rule6_episode_pattern",
+    "rule7_interview_keyword",
+    "rule7_behind_scenes",
+    "rule7_news",
+    "rule7_media_channel",
+}
+
+
+class ConfidenceScorer:
+    """Compute multi-signal confidence scores for classified items."""
+
+    def __init__(self, classifier: RuleClassifier):
+        self.classifier = classifier
+
+    def _duration_seconds(self, item: dict) -> int | None:
+        """Parse duration string to seconds."""
+        dur = item.get("duration", "")
+        if not dur:
+            return None
+        parts = dur.split(":")
+        try:
+            if len(parts) == 3:
+                return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+            elif len(parts) == 2:
+                return int(parts[0]) * 60 + int(parts[1])
+        except ValueError:
+            return None
+        return None
+
+    def signal_rule_strength(self, reason: str) -> tuple[str, float]:
+        """Score based on which rule matched and how specific it was.
+        Returns (signal_name, score) where score is 0.0-1.0."""
+        if reason in STRONG_RULE_REASONS:
+            return ("rule_strength", 1.0)
+        if reason in MEDIUM_RULE_REASONS:
+            return ("rule_strength", 0.7)
+        if reason.startswith("llm_"):
+            return ("rule_strength", 0.5)
+        if reason == "no_rule_match":
+            return ("rule_strength", 0.0)
+        # Unknown rule — treat as medium
+        return ("rule_strength", 0.6)
+
+    def signal_source_reliability(self, item: dict) -> tuple[str, float]:
+        """Score based on the source channel's reliability."""
+        channel = item.get("channel") or item.get("author") or ""
+        source = item.get("source", "")
+
+        # Official channel = highest reliability
+        if channel in self.classifier.official_channels:
+            return ("source_reliability", 1.0)
+
+        # YouTube Topic channels (auto-generated, reliable metadata)
+        if "- Topic" in channel or "- 主題" in channel:
+            return ("source_reliability", 0.85)
+
+        # YouTube source with verified status
+        if source == "youtube" and item.get("verified"):
+            return ("source_reliability", 0.7)
+
+        # Bilibili verified
+        if source == "bilibili" and item.get("verified"):
+            return ("source_reliability", 0.6)
+
+        # Known media/label channels
+        labels = set(self.classifier.data.get("artist", {}).get("labels", []))
+        if channel in labels:
+            return ("source_reliability", 0.9)
+
+        # Unverified or unknown
+        if item.get("verified") is False:
+            return ("source_reliability", 0.3)
+
+        return ("source_reliability", 0.5)
+
+    def signal_duration_fit(self, item: dict, category: str) -> tuple[str, float]:
+        """Score how well the item's duration fits the expected range for its category."""
+        dur = self._duration_seconds(item)
+        if dur is None or category not in DURATION_RANGES:
+            return ("duration_fit", 0.5)  # neutral when unknown
+
+        lo, ideal_lo, ideal_hi, hi = DURATION_RANGES[category]
+
+        if ideal_lo <= dur <= ideal_hi:
+            return ("duration_fit", 1.0)
+        if lo <= dur <= hi:
+            # Proportional score for being within the acceptable range
+            if dur < ideal_lo:
+                score = 0.6 + 0.4 * (dur - lo) / max(ideal_lo - lo, 1)
+            else:
+                score = 0.6 + 0.4 * (hi - dur) / max(hi - ideal_hi, 1)
+            return ("duration_fit", round(min(max(score, 0.6), 1.0), 2))
+        # Outside acceptable range
+        return ("duration_fit", 0.2)
+
+    def signal_view_count(self, item: dict) -> tuple[str, float]:
+        """Score based on view count — higher views generally mean more legitimate content."""
+        views = item.get("view_count") or item.get("play_count") or 0
+        if views == 0:
+            return ("view_count", 0.4)  # unknown/zero views
+        if views >= 1_000_000:
+            return ("view_count", 1.0)
+        if views >= 100_000:
+            return ("view_count", 0.85)
+        if views >= 10_000:
+            return ("view_count", 0.7)
+        if views >= 1_000:
+            return ("view_count", 0.55)
+        return ("view_count", 0.4)
+
+    def signal_title_keyword_match(self, item: dict, category: str) -> tuple[str, float]:
+        """Score based on how strongly the title matches expected keywords for the category."""
+        title = (item.get("title") or "").lower()
+
+        if category == "personal_mv":
+            if re.search(r'official\s*mv|official\s*music\s*video|官方\s*mv', title):
+                return ("title_match", 1.0)
+            if re.search(r'\bmv\b|music\s*video', title):
+                return ("title_match", 0.8)
+            if any(t.lower() in title for t in self.classifier.solo_tracks):
+                return ("title_match", 0.6)
+            return ("title_match", 0.3)
+
+        if category == "she_mv":
+            has_she = self.classifier._has_she_name(item.get("title", ""))
+            has_mv = bool(re.search(r'\bmv\b|music\s*video', title))
+            if has_she and has_mv:
+                return ("title_match", 1.0)
+            if has_she or has_mv:
+                return ("title_match", 0.6)
+            return ("title_match", 0.3)
+
+        if category == "concerts":
+            if re.search(r'演唱会|演唱會|concert', title):
+                return ("title_match", 1.0)
+            if re.search(r'live|现场|現場|巡演', title):
+                return ("title_match", 0.7)
+            return ("title_match", 0.3)
+
+        if category == "variety":
+            if any(s.lower() in title for s in self.classifier.variety_show_names):
+                return ("title_match", 1.0)
+            if re.search(r'颁奖|頒獎|晚会|晚會|典礼|典禮|跨年', title):
+                return ("title_match", 0.8)
+            return ("title_match", 0.3)
+
+        if category == "interviews":
+            if re.search(r'采访|採訪|专访|專訪|访谈|訪談|interview', title):
+                return ("title_match", 1.0)
+            if re.search(r'幕后|幕後|花絮|记者会|記者會', title):
+                return ("title_match", 0.8)
+            return ("title_match", 0.3)
+
+        if category == "ost_singles":
+            if any(n.lower() in title for n in self.classifier.ost_names):
+                return ("title_match", 0.9)
+            if re.search(r'ost|主题曲|主題曲|插曲|片尾曲', title):
+                return ("title_match", 0.8)
+            return ("title_match", 0.3)
+
+        if category == "collabs":
+            if re.search(r'feat|ft\.|×|合唱|duet', title):
+                return ("title_match", 1.0)
+            for name in self.classifier.collab_all_names:
+                if name.lower() in title:
+                    return ("title_match", 0.8)
+            return ("title_match", 0.3)
+
+        return ("title_match", 0.5)
+
+    def score(self, item: dict, category: str, reason: str) -> tuple[float, dict[str, float]]:
+        """Compute overall confidence score and individual signal breakdown.
+
+        Returns:
+            (confidence, signals) where confidence is 0.0-1.0 and signals is
+            a dict mapping signal names to their individual scores.
+        """
+        if category == "discard":
+            # Discarded items: confidence represents how sure we are it should be discarded
+            rule_name, rule_score = self.signal_rule_strength(reason)
+            signals = {rule_name: rule_score}
+            return (rule_score, signals)
+
+        signals: dict[str, float] = {}
+
+        # Gather all signals
+        name, val = self.signal_rule_strength(reason)
+        signals[name] = val
+
+        name, val = self.signal_source_reliability(item)
+        signals[name] = val
+
+        name, val = self.signal_duration_fit(item, category)
+        signals[name] = val
+
+        name, val = self.signal_view_count(item)
+        signals[name] = val
+
+        name, val = self.signal_title_keyword_match(item, category)
+        signals[name] = val
+
+        # Weighted average: rule_strength is the most important signal
+        weights = {
+            "rule_strength": 0.35,
+            "title_match": 0.25,
+            "source_reliability": 0.20,
+            "duration_fit": 0.10,
+            "view_count": 0.10,
+        }
+
+        total_weight = sum(weights.get(k, 0.1) for k in signals)
+        confidence = sum(signals[k] * weights.get(k, 0.1) for k in signals) / total_weight
+        confidence = round(min(max(confidence, 0.0), 1.0), 3)
+
+        return (confidence, signals)
+
+
+# ──────────────────────────────────────────────────────────────────────
 # Step 3: LLM fallback for unclassified items
 # ──────────────────────────────────────────────────────────────────────
 
@@ -644,95 +923,18 @@ LLM_SYSTEM_PROMPT = """你是一个视频分类助手。请将以下田馥甄（
 4. 如果无法确定，请归入最可能的类别"""
 
 
-def _build_router():
-    """Build a shared LiteLLM Router for LLM classification."""
-    from config import (
-        OPENROUTER_MODEL_GEMINI,
-        OPENROUTER_MODEL_SONNET,
-        OPENROUTER_MODEL_OPENAI,
-        ROUTER_ALLOWED_FAILS,
-        ROUTER_COOLDOWN_TIME,
-        ROUTER_NUM_RETRIES,
-    )
-    from litellm import Router
-
-    openrouter_key = os.getenv("OPENROUTER_API_KEY")
-    if not openrouter_key:
-        return None
-
-    return Router(
-        model_list=[
-            {"model_name": "primary", "litellm_params": {"model": OPENROUTER_MODEL_GEMINI, "api_key": openrouter_key, "order": 1}},
-            {"model_name": "primary", "litellm_params": {"model": OPENROUTER_MODEL_SONNET, "api_key": openrouter_key, "order": 2}},
-            {"model_name": "primary", "litellm_params": {"model": OPENROUTER_MODEL_OPENAI, "api_key": openrouter_key, "order": 3}},
-        ],
-        allowed_fails=ROUTER_ALLOWED_FAILS,
-        cooldown_time=ROUTER_COOLDOWN_TIME,
-        num_retries=ROUTER_NUM_RETRIES,
-        enable_pre_call_checks=True,
-    )
-
-
-def _llm_classify_single_batch(router, items: list[dict], batch_idx: int) -> list[tuple[str, str]]:
-    """Classify one batch of items using a shared LLM router."""
-    lines = []
-    for i, item in enumerate(items):
-        desc = (item.get("description") or "")[:200]
-        dur = item.get("duration", "N/A")
-        channel = item.get("channel") or item.get("author") or "N/A"
-        lines.append(f"[{i}] 标题: {item.get('title', 'N/A')}\n    频道: {channel}\n    时长: {dur}\n    简介: {desc}")
-
-    user_msg = f"请对以下 {len(items)} 条视频进行分类：\n\n" + "\n\n".join(lines)
-
-    valid_categories = set(CATEGORY_FILE_MAP.keys()) | {"discard"}
-
-    try:
-        response = router.completion(
-            model="primary",
-            messages=[
-                {"role": "system", "content": LLM_SYSTEM_PROMPT},
-                {"role": "user", "content": user_msg},
-            ],
-            temperature=0.1,
-            max_tokens=4096,
-        )
-        content = response.choices[0].message.content
-
-        json_match = re.search(r'\[.*\]', content or "", re.DOTALL)
-        if not json_match:
-            logger.warning("Batch %d: Could not parse LLM JSON response", batch_idx)
-            return [("unclassified", "llm_parse_error")] * len(items)
-
-        results_raw = json.loads(json_match.group())
-        results_map = {}
-        for r in results_raw:
-            idx = r.get("index", -1)
-            cat = r.get("category", "unclassified")
-            reason = r.get("reason", "llm_fallback")
-            if cat not in valid_categories:
-                cat = "unclassified"
-            results_map[idx] = (cat, f"llm_{reason}")
-
-        return [results_map.get(i, ("unclassified", "llm_missing_index")) for i in range(len(items))]
-
-    except Exception as e:
-        logger.error("Batch %d LLM error: %s", batch_idx, e)
-        return [("unclassified", "llm_error")] * len(items)
-
-
 def llm_classify_parallel(
     unclassified_items: list[tuple[int, dict]],
     max_workers: int = 4,
     batch_size: int = 20,
 ) -> list[tuple[int, dict, str, str]]:
     """Classify unclassified items via LLM in parallel batches.
-    Returns list of (original_index, item, category, reason)."""
+    Returns list of (original_index, item, category, reason).
+    Uses claude_llm.classify_batch() via the claude CLI."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
+    from claude_llm import classify_batch
 
-    router = _build_router()
-    if router is None:
-        logger.error("OPENROUTER_API_KEY not set, cannot use LLM fallback")
-        return [(idx, item, "unclassified", "llm_no_api_key") for idx, item in unclassified_items]
+    valid_categories = list(CATEGORY_FILE_MAP.keys())
 
     # Split into batches
     batches: list[list[tuple[int, dict]]] = []
@@ -746,18 +948,41 @@ def llm_classify_parallel(
     all_results: list[tuple[int, dict, str, str]] = []
     completed = 0
 
+    def _classify_one_batch(batch_idx: int, batch: list[tuple[int, dict]]) -> list[tuple[int, dict, str, str]]:
+        batch_items = [item for _, item in batch]
+        try:
+            raw = classify_batch(
+                items=batch_items,
+                categories=valid_categories,
+                artist_name="",
+                system_prompt=LLM_SYSTEM_PROMPT,
+            )
+            results_map = {}
+            for r in raw:
+                idx = r.get("index", -1)
+                cat = r.get("category", "unclassified")
+                reason = r.get("reason", "llm_fallback")
+                if cat not in set(valid_categories) | {"discard"}:
+                    cat = "unclassified"
+                results_map[idx] = (cat, f"llm_{reason}")
+
+            return [
+                (orig_idx, item, *results_map.get(i, ("unclassified", "llm_missing_index")))
+                for i, (orig_idx, item) in enumerate(batch)
+            ]
+        except Exception as e:
+            logger.error("Batch %d LLM error: %s", batch_idx, e)
+            return [(orig_idx, item, "unclassified", "llm_error") for orig_idx, item in batch]
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_batch = {}
         for batch_idx, batch in enumerate(batches):
-            batch_items = [item for _, item in batch]
-            future = executor.submit(_llm_classify_single_batch, router, batch_items, batch_idx)
-            future_to_batch[future] = (batch_idx, batch)
+            future = executor.submit(_classify_one_batch, batch_idx, batch)
+            future_to_batch[future] = batch_idx
 
         for future in as_completed(future_to_batch):
-            batch_idx, batch = future_to_batch[future]
-            results = future.result()
-            for (orig_idx, item), (cat, reason) in zip(batch, results):
-                all_results.append((orig_idx, item, cat, reason))
+            batch_results = future.result()
+            all_results.extend(batch_results)
             completed += 1
             if completed % 10 == 0 or completed == total_batches:
                 logger.info("LLM progress: %d/%d batches done", completed, total_batches)
@@ -852,6 +1077,28 @@ def print_report(classified: dict[str, list[dict]]):
     for reason, count in reason_counts.most_common():
         print(f"  {reason:40s}: {count:5d}")
 
+    # Confidence distribution
+    print("\nConfidence Distribution:")
+    all_confidences = []
+    for cat, items in classified.items():
+        for item in items:
+            conf = item.get("confidence")
+            if conf is not None:
+                all_confidences.append(conf)
+    if all_confidences:
+        buckets = {"high (>=0.8)": 0, "medium (0.5-0.8)": 0, "low (<0.5)": 0}
+        for c in all_confidences:
+            if c >= 0.8:
+                buckets["high (>=0.8)"] += 1
+            elif c >= 0.5:
+                buckets["medium (0.5-0.8)"] += 1
+            else:
+                buckets["low (<0.5)"] += 1
+        avg = sum(all_confidences) / len(all_confidences)
+        for label, count in buckets.items():
+            print(f"  {label:25s}: {count:5d} ({100*count/len(all_confidences):.1f}%)")
+        print(f"  {'avg confidence':25s}: {avg:.3f}")
+
     # Migration matrix
     print("\nMigration Matrix (original_file_id -> new category):")
     matrix: dict[int, Counter] = defaultdict(Counter)
@@ -898,12 +1145,13 @@ def main():
     # Load reference data
     artist_data = load_artist_data()
     classifier = RuleClassifier(artist_data)
+    scorer = ConfidenceScorer(classifier)
 
     # Step 1: Merge & dedup
     file_ids = list(range(2, 9))
     all_items = merge_and_dedup(file_ids)
 
-    # Step 2: Rule-based classification
+    # Step 2: Rule-based classification + confidence scoring
     classified: dict[str, list[dict]] = defaultdict(list)
     unclassified_items: list[tuple[int, dict]] = []
 
@@ -914,21 +1162,30 @@ def main():
         if category == "unclassified":
             unclassified_items.append((i, item))
         else:
+            confidence, signals = scorer.score(item, category, reason)
+            item["confidence"] = confidence
+            item["confidence_signals"] = signals
             classified[category].append(item)
 
     rule_classified = sum(len(v) for v in classified.values())
     logger.info("Rule-based: %d classified, %d unclassified", rule_classified, len(unclassified_items))
 
-    # Step 3: LLM fallback (parallel)
+    # Step 3: LLM fallback (parallel) + confidence scoring
     if unclassified_items and not args.no_llm:
         results = llm_classify_parallel(unclassified_items, max_workers=args.workers)
         for _, item, cat, reason in results:
             item["category"] = cat
             item["classification_reason"] = reason
+            confidence, signals = scorer.score(item, cat, reason)
+            item["confidence"] = confidence
+            item["confidence_signals"] = signals
             classified[cat].append(item)
         logger.info("LLM fallback complete")
     elif unclassified_items and args.no_llm:
         for _, item in unclassified_items:
+            confidence, signals = scorer.score(item, "unclassified", "no_rule_match")
+            item["confidence"] = confidence
+            item["confidence_signals"] = signals
             classified["unclassified"].append(item)
 
     # Report

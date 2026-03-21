@@ -8,84 +8,102 @@ Always use **pnpm** instead of npm or yarn for all JavaScript/TypeScript work in
 
 ## Project Overview
 
-This is a Python-based AI agent that collects, verifies, and organizes content about Taiwanese singer Hebe Tien (田馥甄) from YouTube, Bilibili, and Google Search, outputting verified markdown files.
+Multi-artist video content collector. Reads an `artist.yaml` profile and runs a 3-phase pipeline (search → dedup/verify → format) to collect and organize video content from YouTube, Bilibili, and Google Search. The artist YAML is the single source of truth — swap the YAML to collect for a different artist.
 
 ## Commands
 
 **Setup:**
 ```bash
 uv venv && uv pip install -r requirements.txt
-# or: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 ```
 
-**Run agent (interactive LLM-orchestrated mode):**
+**Run pipeline:**
 ```bash
-uv run python agent.py           # fresh run
-uv run python agent.py --resume  # resume from .checkpoint.json
+uv run python pipeline.py                                    # all phases (default artist)
+uv run python pipeline.py --artist artists/hebe.yaml         # specify artist
+uv run python pipeline.py --phase 1                          # search only
+uv run python pipeline.py --phase 2                          # dedup + verify
+uv run python pipeline.py --phase 3                          # LLM format
+uv run python pipeline.py --no-llm                           # template fallback
 ```
 
-**Run pipeline (deterministic 3-phase mode):**
+**Reclassify existing data:**
 ```bash
-uv run python pipeline.py                 # all phases
-uv run python pipeline.py --phase 1       # search only → raw_results/
-uv run python pipeline.py --phase 2       # dedup + verify → processed/
-uv run python pipeline.py --phase 3       # LLM format → output/
-uv run python pipeline.py --no-llm        # phase 3 with template fallback
+uv run python reclassify.py --artist artists/hebe.yaml --apply    # write to processed/
+uv run python reclassify.py --dry-run                              # stats only
+uv run python reclassify.py --no-llm                               # rules only
+uv run python reclassify.py --workers 4                            # parallel LLM workers
 ```
 
-**Reclassify existing data (by content, not search query origin):**
+**Generate new artist (full flow):**
 ```bash
-uv run python reclassify.py --apply       # rules + LLM, write to processed/
-uv run python reclassify.py --dry-run     # stats only, no file writes
-uv run python reclassify.py               # rules + LLM, write to reclassified/
-uv run python reclassify.py --no-llm      # rules only, skip LLM fallback
-uv run python reclassify.py --workers 8   # custom parallel LLM workers (default: 12)
+uv run python generate.py "周杰伦" "Jay Chou"                   # create YAML + pipeline + build
+uv run python generate.py "周杰伦" "Jay Chou" --skip-build      # skip web build
+uv run python generate.py --artist artists/jay_chou.yaml        # existing YAML, full pipeline
+uv run python generate.py --artist artists/jay_chou.yaml --phase 1  # single phase only
+```
+
+**Generate artist YAML only:**
+```bash
+uv run python create_artist.py "周杰伦" "Jay Chou"
+```
+
+**Review low-confidence items:**
+```bash
+uv run python review.py                              # review items below 0.7 confidence
+uv run python review.py --threshold 0.6              # custom threshold
+uv run python review.py --category concerts          # filter by category
+uv run python review.py --resume                     # resume previous session
+```
+
+**Channel crawl + coverage:**
+```bash
+uv run python channel_crawl.py --artist artists/hebe.yaml              # crawl channels
+uv run python channel_crawl.py --artist artists/hebe.yaml --coverage   # coverage report
 ```
 
 **Tests:**
 ```bash
 pytest tests/
-pytest tests/test_tools.py   # tool unit tests
-pytest tests/test_agent.py   # agent loop tests
+pytest tests/test_tools.py
 ```
 
 ## Architecture
 
-Two execution modes with shared tool layer:
-
-### Agent Mode (`agent.py`)
-LLM (via LiteLLM Router) orchestrates tool calls in a loop (max 250 iterations). Saves `.checkpoint.json` after each turn for resume. Trims conversation history (keeps first msg + last 60) when approaching context limits. Model fallback order: Gemini → Claude Sonnet → OpenAI (via OpenRouter).
-
 ### Pipeline Mode (`pipeline.py`)
-Deterministic 3-phase execution. Phase 1 uses 4 worker threads (one per file category) with `search_plan.py` defining all 170+ queries declaratively. Bilibili calls serialized via global lock across threads. Phases write to `raw_results/` → `processed/` → `output/`.
+Deterministic 3-phase execution with `--artist` parameter. Queries are generated from `artist.yaml` via `query_generator.py`. Data is stored per-artist in `data/{slug}/`. Bilibili calls serialized via global lock.
+
+### Key Modules
+- `artist_profile.py` — Pydantic data models, loads/validates artist YAML
+- `query_generator.py` — Data-driven search query generation from artist profile
+- `claude_llm.py` — Thin wrapper around `claude -p` CLI for all LLM calls
+- `reclassify.py` — 7-rule waterfall classifier + LLM fallback + confidence scoring
+- `review.py` — Terminal UI for human review of low-confidence items
+- `channel_crawl.py` — YouTube channel crawling + coverage gap detection
+- `generate.py` — CLI orchestrator: create YAML → pipeline → build
+- `formatter.py` — LLM markdown generation with template fallback
+- `tools.py` — YouTube/Bilibili/Google search, URL verification, dedup tracking
+- `config.py` — Rate limits, verification settings
 
 ### Tools (`tools.py`)
-- **YouTubeSearchTool**: YouTube Data API v3, auto-rotates API keys on quota exhaustion, results are `verified=True`
-- **GoogleSearchTool**: Serper.dev gateway, results `verified=None`
-- **BilibiliSearchTool**: Public API, auto-manages cookies (buvid3/buvid4) for anti-bot bypass, handles 412 with retry
-- **URLVerifier**: HEAD/GET with 405 fallback; YouTube URLs fast-tracked as valid
-- **DuplicateTracker**: Source-aware dedup (YouTube by video ID, Bilibili by BVID, others by URL)
-- **FileWriter**: Writes to `output/` with pre-created subdirectories
-
-### Key Files
-- `config.py` — rate limits, output paths, model names, context window thresholds
-- `search_plan.py` — declarative search config (8 file categories, 170+ queries)
-- `prompts.py` — system prompt (tool descriptions, Hebe's discography context) + 186-line initial task
-- `formatter.py` — LLM markdown generation with template fallback; instructed never to hallucinate links
+- **YouTubeSearchTool**: YouTube Data API v3, auto-rotates API keys
+- **GoogleSearchTool**: Serper.dev gateway
+- **BilibiliSearchTool**: Public API, auto-manages cookies for anti-bot bypass
+- **URLVerifier**: HEAD/GET with 405 fallback
+- **DuplicateTracker**: Source-aware dedup
 
 ## Required Environment Variables (`.env`)
 ```
-ANTHROPIC_API_KEY=sk-ant-...
-OPENROUTER_API_KEY=...          # for LiteLLM multi-model routing
-YOUTUBE_API_KEY=AIza...         # supports multiple: YOUTUBE_API_KEY_2, _3
+YOUTUBE_API_KEY=AIza...         # supports multiple: YOUTUBE_API_KEY_2, _3, etc.
 SERPER_API_KEY=...
 ```
 
+LLM calls use `claude` CLI (must be installed and authenticated). No API keys needed for LLM.
+
 ## Data Flow
 ```
-raw_results/file_{id}.json   ← Phase 1 raw API responses
-processed/file_{id}.json     ← Phase 2 deduplicated + verified
-output/{category}/*.md       ← Phase 3 formatted markdown tables
-agent_run.log / pipeline_run.log  ← execution logs
-.checkpoint.json             ← auto-saved resume state (deleted on success)
+artists/{name}.yaml                    ← Artist profile (single source of truth)
+data/{slug}/raw_results/file_{id}.json ← Phase 1 raw API responses
+data/{slug}/processed/file_{id}.json   ← Phase 2 deduplicated + verified
+data/{slug}/output/{category}/*.md     ← Phase 3 formatted markdown
 ```

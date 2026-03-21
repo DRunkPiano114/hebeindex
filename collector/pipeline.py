@@ -7,11 +7,12 @@ Phase 3: LLM organizes + formats processed JSON into Markdown (per-file, ~3-5K
          tokens each — no context overload). Falls back to template on failure.
 
 Usage:
-    uv run python pipeline.py               # run all phases (LLM formatting)
-    uv run python pipeline.py --phase 1     # search only
-    uv run python pipeline.py --phase 2     # dedup + verify only
-    uv run python pipeline.py --phase 3     # LLM format + write only
-    uv run python pipeline.py --no-llm      # use template fallback, skip LLM
+    uv run python pipeline.py                               # run all phases
+    uv run python pipeline.py --artist artists/hebe.yaml    # specify artist
+    uv run python pipeline.py --phase 1                     # search only
+    uv run python pipeline.py --phase 2                     # dedup + verify only
+    uv run python pipeline.py --phase 3                     # LLM format + write only
+    uv run python pipeline.py --no-llm                      # use template fallback
 """
 
 from __future__ import annotations
@@ -29,9 +30,9 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 
-from config import OUTPUT_DIR, OUTPUT_SUBDIRS, BILIBILI_RATE_LIMIT
-from agent import build_router
-from search_plan import SEARCH_PLAN
+from config import BILIBILI_RATE_LIMIT
+from artist_profile import ArtistProfile, load_profile
+from query_generator import build_search_plan
 from tools import (
     YouTubeSearchTool,
     GoogleSearchTool,
@@ -57,8 +58,11 @@ logging.basicConfig(
 logger = logging.getLogger("pipeline")
 
 BASE_DIR = Path(__file__).parent
-RAW_DIR = BASE_DIR / "raw_results"
-PROCESSED_DIR = BASE_DIR / "processed"
+
+
+def _data_dir(profile: ArtistProfile) -> Path:
+    """Per-artist data directory: data/{slug}/"""
+    return BASE_DIR / "data" / profile.slug()
 
 
 # ---------------------------------------------------------------------------
@@ -101,11 +105,12 @@ def _phase1_file_worker(
     file_spec: dict,
     youtube_keys: list[str],
     serper_key: str,
+    raw_dir: Path,
 ) -> None:
     """Process all searches for a single file with its own tool instances."""
     fid = file_spec["file_id"]
     searches = file_spec["searches"]
-    out_path = RAW_DIR / f"file_{fid}.json"
+    out_path = raw_dir / f"file_{fid}.json"
 
     tools = {
         "youtube": YouTubeSearchTool(youtube_keys),
@@ -146,13 +151,8 @@ def _phase1_file_worker(
     logger.info("File %d: collected %d search batches", fid, len(all_results))
 
 
-def phase1_search() -> None:
-    """Execute every search in SEARCH_PLAN and persist raw results as JSON.
-
-    Files are processed in parallel (max 4 workers). Each worker owns its own
-    tool instances to avoid shared-state race conditions. Bilibili calls are
-    serialized across threads via _bilibili_global_rate_limit().
-    """
+def phase1_search(profile: ArtistProfile, search_plan: list[dict]) -> None:
+    """Execute every search in search_plan and persist raw results as JSON."""
     load_dotenv()
 
     youtube_keys = [
@@ -176,10 +176,11 @@ def phase1_search() -> None:
         logger.error("Missing API keys: %s", ", ".join(missing))
         sys.exit(1)
 
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    raw_dir = _data_dir(profile) / "raw_results"
+    raw_dir.mkdir(parents=True, exist_ok=True)
 
-    tasks = [s for s in SEARCH_PLAN if s["searches"]]
-    skipped = [s for s in SEARCH_PLAN if not s["searches"]]
+    tasks = [s for s in search_plan if s["searches"]]
+    skipped = [s for s in search_plan if not s["searches"]]
     for spec in skipped:
         logger.info(
             "File %d (%s): no searches, skipping phase 1",
@@ -190,7 +191,7 @@ def phase1_search() -> None:
 
     with ThreadPoolExecutor(max_workers=len(tasks)) as executor:
         futures = {
-            executor.submit(_phase1_file_worker, spec, youtube_keys, serper_key): spec
+            executor.submit(_phase1_file_worker, spec, youtube_keys, serper_key, raw_dir): spec
             for spec in tasks
         }
         for future in as_completed(futures):
@@ -200,7 +201,7 @@ def phase1_search() -> None:
             except Exception as exc:
                 logger.error("File %d phase1 failed: %s", spec["file_id"], exc)
 
-    logger.info("Phase 1 complete — all raw results saved to %s", RAW_DIR)
+    logger.info("Phase 1 complete — all raw results saved to %s", raw_dir)
 
 
 def _save_raw(path: Path, file_spec: dict, searches: list[dict]) -> None:
@@ -219,11 +220,11 @@ def _save_raw(path: Path, file_spec: dict, searches: list[dict]) -> None:
 # Phase 2 — Deduplicate + verify
 # ---------------------------------------------------------------------------
 
-def _phase2_file_worker(file_spec: dict, verifier: URLVerifier) -> None:
-    """Deduplicate and verify a single file. Fully independent of other files."""
+def _phase2_file_worker(file_spec: dict, verifier: URLVerifier, raw_dir: Path, proc_dir: Path) -> None:
+    """Deduplicate and verify a single file."""
     fid = file_spec["file_id"]
-    raw_path = RAW_DIR / f"file_{fid}.json"
-    proc_path = PROCESSED_DIR / f"file_{fid}.json"
+    raw_path = raw_dir / f"file_{fid}.json"
+    proc_path = proc_dir / f"file_{fid}.json"
 
     if not raw_path.exists():
         logger.warning("File %d: no raw results found, run phase 1 first", fid)
@@ -287,24 +288,22 @@ def _phase2_file_worker(file_spec: dict, verifier: URLVerifier) -> None:
     )
 
 
-def phase2_process() -> None:
-    """Deduplicate results and verify non-YouTube URLs.
-
-    All files are processed in parallel — each file's dedup and HTTP verification
-    is fully independent. URLVerifier is stateless (new httpx.Client per check)
-    and safe to share across threads.
-    """
+def phase2_process(profile: ArtistProfile, search_plan: list[dict]) -> None:
+    """Deduplicate results and verify non-YouTube URLs."""
     load_dotenv()
     verifier = URLVerifier()
 
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    data_root = _data_dir(profile)
+    raw_dir = data_root / "raw_results"
+    proc_dir = data_root / "processed"
+    proc_dir.mkdir(parents=True, exist_ok=True)
 
-    tasks = [s for s in SEARCH_PLAN if s["searches"]]
+    tasks = [s for s in search_plan if s["searches"]]
     logger.info("Phase 2: processing %d files in parallel (max_workers=%d)", len(tasks), len(tasks))
 
     with ThreadPoolExecutor(max_workers=len(tasks)) as executor:
         futures = {
-            executor.submit(_phase2_file_worker, spec, verifier): spec
+            executor.submit(_phase2_file_worker, spec, verifier, raw_dir, proc_dir): spec
             for spec in tasks
         }
         for future in as_completed(futures):
@@ -314,7 +313,7 @@ def phase2_process() -> None:
             except Exception as exc:
                 logger.error("File %d phase2 failed: %s", spec["file_id"], exc)
 
-    logger.info("Phase 2 complete — processed results saved to %s", PROCESSED_DIR)
+    logger.info("Phase 2 complete — processed results saved to %s", proc_dir)
 
 
 def _flatten_and_dedup(searches: list[dict]) -> list[dict]:
@@ -354,12 +353,14 @@ def _dedup_key(result: dict, source: str) -> str | None:
 # Phase 3 — Format and write output
 # ---------------------------------------------------------------------------
 
-def _format_one(file_spec: dict, use_llm: bool, router) -> tuple[str, int]:
-    """Format a single file and write it to disk. Returns (output_path, result_count)."""
+def _format_one(file_spec: dict, use_llm: bool, profile: ArtistProfile) -> tuple[str, int]:
+    """Format a single file and write it to disk."""
     fid = file_spec["file_id"]
-    output_path = os.path.join(OUTPUT_DIR, file_spec["output_path"])
+    data_root = _data_dir(profile)
+    output_dir = data_root / "output"
+    output_path = str(output_dir / file_spec["output_path"])
 
-    proc_path = PROCESSED_DIR / f"file_{fid}.json"
+    proc_path = data_root / "processed" / f"file_{fid}.json"
     if not proc_path.exists():
         logger.warning("File %d: no processed data, run phases 1-2 first", fid)
         return output_path, 0
@@ -367,7 +368,7 @@ def _format_one(file_spec: dict, use_llm: bool, router) -> tuple[str, int]:
     proc_data = json.loads(proc_path.read_text("utf-8"))
 
     if use_llm:
-        md = format_file_with_llm(proc_data, router)
+        md = format_file_with_llm(proc_data, profile)
     else:
         md = format_file_template(proc_data)
 
@@ -379,34 +380,25 @@ def _format_one(file_spec: dict, use_llm: bool, router) -> tuple[str, int]:
     return output_path, proc_data["total_results"]
 
 
-def phase3_format(use_llm: bool = True) -> None:
-    """Render processed JSON into Markdown files and write to output/.
+def phase3_format(profile: ArtistProfile, search_plan: list[dict], use_llm: bool = True) -> None:
+    """Render processed JSON into Markdown files and write to output/."""
+    data_root = _data_dir(profile)
+    output_dir = data_root / "output"
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    When use_llm=True, each file gets an independent LLM call (~3-5K tokens)
-    for intelligent grouping and context.  Falls back to template on failure.
-    When use_llm=False, uses deterministic template rendering only.
-    Files 2-8 are processed in parallel via ThreadPoolExecutor.
-    """
-    load_dotenv()
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    for sub in OUTPUT_SUBDIRS:
-        os.makedirs(os.path.join(OUTPUT_DIR, sub), exist_ok=True)
+    # Create output subdirectories from category output_paths
+    for cat in profile.categories:
+        if cat.output_path:
+            subdir = output_dir / Path(cat.output_path).parent
+            subdir.mkdir(parents=True, exist_ok=True)
 
-    openrouter_key = os.getenv("OPENROUTER_API_KEY", "")
-    if use_llm and not openrouter_key:
-        logger.warning("No OPENROUTER_API_KEY set, falling back to template mode")
-        use_llm = False
+    # Write README
+    _write_readme(str(output_dir / "README.md"), profile)
 
-    router = build_router(openrouter_key) if use_llm else None
-
-    readme_spec = next((s for s in SEARCH_PLAN if s["file_id"] == 1), None)
-    if readme_spec:
-        _write_readme(os.path.join(OUTPUT_DIR, readme_spec["output_path"]))
-
-    tasks = [s for s in SEARCH_PLAN if s["file_id"] != 1]
+    tasks = [s for s in search_plan if s["searches"]]
     with ThreadPoolExecutor(max_workers=len(tasks)) as executor:
         futures = {
-            executor.submit(_format_one, s, use_llm, router): s
+            executor.submit(_format_one, s, use_llm, profile): s
             for s in tasks
         }
         for future in as_completed(futures):
@@ -416,48 +408,71 @@ def phase3_format(use_llm: bool = True) -> None:
             except Exception as exc:
                 logger.error("File %d failed: %s", spec["file_id"], exc)
 
-    _update_readme_index()
-    logger.info("Phase 3 complete — output files written to %s", OUTPUT_DIR)
+    _update_readme_index(profile, search_plan)
+    logger.info("Phase 3 complete — output files written to %s", output_dir)
 
 
-def _write_readme(path: str) -> None:
+def _write_readme(path: str, profile: ArtistProfile) -> None:
+    """Write a templated README from profile data."""
     today = datetime.now().strftime("%Y-%m-%d")
-    content = f"""# 田馥甄（Hebe）内容资料库
+    p = profile
+    primary = p.artist.names.primary
+    english = p.artist.names.english
 
-> 本资料库系统性收录田馥甄（Hebe Tien）相关视频、音频及文字内容。
+    # Albums table
+    album_rows = "\n".join(
+        f"| {a.name} | {a.year} |" for a in p.discography.solo_albums
+    )
+
+    # Concerts section
+    concerts_lines = []
+    for c in p.discography.concerts:
+        concerts_lines.append(f"- **{c.name}** ({c.years})")
+
+    # Awards
+    awards_lines = "\n".join(f"- {a}" for a in p.artist.awards) if p.artist.awards else "- (暂无记录)"
+
+    # Social links
+    social_rows = ""
+    for platform, link in p.artist.social_links.items():
+        social_rows += f"| {platform.capitalize()} | [{link}]({link}) |\n"
+
+    # File index
+    file_index_rows = ""
+    for cat in p.categories:
+        if cat.output_path:
+            file_index_rows += f"| {cat.label} | [{cat.output_path}]({cat.output_path}) | {cat.description[:30]}... |\n"
+
+    content = f"""# {primary}（{english}）内容资料库
+
+> 本资料库系统性收录{primary}（{english}）相关视频、音频及文字内容。
 > 所有链接均来自 YouTube Data API v3、Bilibili 搜索 API、Google 搜索（Serper.dev）的真实搜索结果。
 > 最后更新：{today}
 
 ---
 
-## 田馥甄基本信息
+## 基本信息
 
 | 项目 | 内容 |
 |------|------|
-| 本名 | 田馥甄 |
-| 英文名 | Hebe Tien |
-| 出生日期 | 1983年3月30日 |
-| 出道 | 2001年（S.H.E 成员） |
-| 个人出道 | 2010年9月3日 |
+| 本名 | {primary} |
+| 英文名 | {english} |
+{f"| 出生年份 | {p.artist.birth_year} |" if p.artist.birth_year else ""}
+{f"| 风格 | {p.artist.genre} |" if p.artist.genre else ""}
 
 ### 个人专辑
 
 | 专辑 | 年份 |
 |------|------|
-| To Hebe | 2010 |
-| My Love | 2011 |
-| 渺小 | 2013 |
-| 日常 | 2016 |
-| 无人知晓 | 2020 |
+{album_rows}
 
 ### 重要演唱会
 
-- **如果世界巡迴演唱会** (2014–2017，38场)
-- **一一巡迴演唱会** (2020–2023，11场)
+{chr(10).join(concerts_lines)}
 
 ### 主要奖项
 
-- 第32届金曲奖最佳华语女歌手（2021）
+{awards_lines}
 
 ---
 
@@ -465,51 +480,40 @@ def _write_readme(path: str) -> None:
 
 | 平台 | 链接 |
 |------|------|
-| YouTube | [HIM International Music](https://www.youtube.com/@HIM_International) |
-| Bilibili | 搜索 "Hebe田馥甄官方" |
-| Facebook | [田馥甄 Hebe](https://www.facebook.com/HebeTien) |
-| Instagram | [@haborstory](https://www.instagram.com/haborstory/) |
-
+{social_rows}
 ---
 
 ## 文件索引
 
 | 文件 | 路径 | 说明 |
 |------|------|------|
-| 个人MV | [MV/个人MV.md](MV/个人MV.md) | 个人专辑全部 MV |
-| S.H.E MV | [MV/SHE_MV.md](MV/SHE_MV.md) | S.H.E 时期 MV |
-| 演唱会 | [演唱会/演唱会.md](演唱会/演唱会.md) | 个人 + S.H.E 演唱会 |
-| 综艺节目 | [节目与访谈/综艺节目.md](节目与访谈/综艺节目.md) | 综艺出演 |
-| 采访访谈 | [节目与访谈/采访访谈.md](节目与访谈/采访访谈.md) | 专访与访谈 |
-| 影视单曲 | [歌曲与合作/影视单曲.md](歌曲与合作/影视单曲.md) | OST 与独立单曲 |
-| 合唱合作 | [歌曲与合作/合唱合作.md](歌曲与合作/合唱合作.md) | 合唱与跨艺人合作 |
-"""
+{file_index_rows}"""
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
     logger.info("Written README: %s", path)
 
 
-def _update_readme_index() -> None:
+def _update_readme_index(profile: ArtistProfile, search_plan: list[dict]) -> None:
     """Rewrite README with result counts from processed data."""
-    readme_path = os.path.join(OUTPUT_DIR, "README.md")
-    if not os.path.exists(readme_path):
+    data_root = _data_dir(profile)
+    readme_path = data_root / "output" / "README.md"
+    proc_dir = data_root / "processed"
+
+    if not readme_path.exists():
         return
 
-    with open(readme_path, "r", encoding="utf-8") as f:
-        content = f.read()
+    content = readme_path.read_text("utf-8")
 
-    # Remove any previous stats section before rewriting
+    # Remove any previous stats section
     marker = "\n---\n\n## 收录统计\n"
     idx = content.find(marker)
     if idx != -1:
         content = content[:idx]
 
     counts: list[str] = []
-    for file_spec in SEARCH_PLAN:
+    for file_spec in search_plan:
         fid = file_spec["file_id"]
-        if fid == 1:
-            continue
-        proc_path = PROCESSED_DIR / f"file_{fid}.json"
+        proc_path = proc_dir / f"file_{fid}.json"
         if proc_path.exists():
             data = json.loads(proc_path.read_text("utf-8"))
             counts.append(f"- **{file_spec['title']}**: {data['total_results']} 条结果")
@@ -518,9 +522,7 @@ def _update_readme_index() -> None:
 
     content += "\n---\n\n## 收录统计\n\n" + "\n".join(counts) + "\n"
 
-    with open(readme_path, "w", encoding="utf-8") as f:
-        f.write(content)
-
+    readme_path.write_text(content, encoding="utf-8")
     logger.info("README index updated with result counts")
 
 
@@ -531,6 +533,12 @@ def _update_readme_index() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="3-phase content collection pipeline"
+    )
+    parser.add_argument(
+        "--artist",
+        type=str,
+        default=None,
+        help="Path to artist YAML (default: auto-detect from artists/)",
     )
     parser.add_argument(
         "--phase",
@@ -544,7 +552,23 @@ def main() -> None:
         action="store_true",
         help="Phase 3: use deterministic template instead of LLM formatting",
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show claude CLI internal progress on stderr",
+    )
     args = parser.parse_args()
+
+    if args.verbose:
+        import claude_llm
+        claude_llm.VERBOSE = True
+
+    profile = load_profile(args.artist)
+    search_plan = build_search_plan(profile)
+    logger.info("Artist: %s (%s)", profile.artist.names.primary, profile.artist.names.english)
+    logger.info("Categories: %d, Total queries: %d",
+                len(profile.categories),
+                sum(len(s["searches"]) for s in search_plan))
 
     start = time.time()
 
@@ -552,19 +576,19 @@ def main() -> None:
         logger.info("=" * 60)
         logger.info("PHASE 1: Deterministic Search")
         logger.info("=" * 60)
-        phase1_search()
+        phase1_search(profile, search_plan)
 
     if args.phase is None or args.phase == 2:
         logger.info("=" * 60)
         logger.info("PHASE 2: Dedup + Verify")
         logger.info("=" * 60)
-        phase2_process()
+        phase2_process(profile, search_plan)
 
     if args.phase is None or args.phase == 3:
         logger.info("=" * 60)
         logger.info("PHASE 3: Format + Write (%s)", "template" if args.no_llm else "LLM")
         logger.info("=" * 60)
-        phase3_format(use_llm=not args.no_llm)
+        phase3_format(profile, search_plan, use_llm=not args.no_llm)
 
     logger.info("=" * 60)
     logger.info("Pipeline finished in %.1f seconds", time.time() - start)

@@ -1,9 +1,8 @@
 """
-query_generator.py — Generate search queries programmatically from artist.yaml.
+query_generator.py — Generate search queries programmatically from artist YAML.
 
-Replaces the 170+ hand-written queries in search_plan.py with a data-driven
-approach. Queries are generated per-platform (youtube/bilibili/google) and
-are NOT pre-assigned to categories — classification happens after search.
+Data-driven approach: queries are generated per-platform (youtube/bilibili/google),
+each tagged with a category for build_search_plan() to group by file.
 """
 
 from __future__ import annotations
@@ -15,7 +14,8 @@ def generate_queries(profile: ArtistProfile | None = None) -> list[dict]:
     """
     Generate all search queries from artist profile.
 
-    Returns list of {"tool": "youtube"|"bilibili"|"google", "query": str, "page": int}
+    Returns list of {"tool": "youtube"|"bilibili"|"google", "query": str,
+                     "page": int, "category": str}
     """
     if profile is None:
         profile = load_profile()
@@ -23,165 +23,185 @@ def generate_queries(profile: ArtistProfile | None = None) -> list[dict]:
     queries: list[dict] = []
     seen: set[str] = set()
 
-    def add(tool: str, query: str, page: int = 1) -> None:
+    def add(tool: str, query: str, page: int = 1, category: str = "") -> None:
         key = f"{tool}:{query}:{page}"
         if key not in seen:
             seen.add(key)
-            queries.append({"tool": tool, "query": query, "page": page})
+            queries.append({"tool": tool, "query": query, "page": page, "category": category})
 
-    names = profile.all_artist_names()
     primary = profile.artist.names.primary
     english = profile.artist.names.english
-    group_name = profile.group.name
-    group_aliases = profile.group.aliases
+    group = profile.group
+    has_group = group is not None
+    group_name = group.name if group else ""
+    group_aliases = group.aliases if group else []
 
     # --- Personal MV queries ---
     for name in [primary, english]:
-        add("youtube", f"{name} MV official")
+        add("youtube", f"{name} MV official", category="personal_mv")
     for album in profile.discography.solo_albums:
         for track in album.tracks:
-            add("youtube", f"{primary} {track} MV")
+            add("youtube", f"{primary} {track} MV", category="personal_mv")
     # Recent standalone singles
     for ost in profile.discography.ost_singles:
-        add("youtube", f"{primary} {ost.name} MV")
+        add("youtube", f"{primary} {ost.name} MV", category="personal_mv")
     # Bilibili MV
-    add("bilibili", f"{primary} MV 官方")
-    add("bilibili", f"Hebe {primary} MV")
-    add("bilibili", f"{primary} 小幸运 官方")
+    add("bilibili", f"{primary} MV 官方", category="personal_mv")
+    add("bilibili", f"{english} {primary} MV", category="personal_mv")
+    # Top tracks on Bilibili
     for album in profile.discography.solo_albums:
-        # Bilibili top tracks per album
-        for track in album.tracks[:3]:
-            add("bilibili", f"{primary} {track} MV")
+        for track in album.tracks[:5]:
+            add("bilibili", f"{primary} {track} MV", category="personal_mv")
+    # Alias searches for key categories
+    for alias in profile.artist.names.aliases:
+        add("youtube", f"{alias} MV", category="personal_mv")
+        add("bilibili", f"{alias} MV", category="personal_mv")
+        add("youtube", f"{alias} 演唱会", category="concerts")
+        add("youtube", f"{alias} interview", category="interviews")
+    add("google", f"{primary} MV site:bilibili.com", category="personal_mv")
 
     # --- OST / Singles queries ---
     for ost in profile.discography.ost_singles:
         if ost.source:
-            add("youtube", f"{primary} {ost.name} {ost.source}")
+            add("youtube", f"{primary} {ost.name} {ost.source}", category="ost_singles")
             if ost.source != ost.name:
-                add("youtube", f"{primary} {ost.name} MV")
+                add("youtube", f"{primary} {ost.name} MV", category="ost_singles")
         else:
-            add("youtube", f"{primary} {ost.name}")
-    add("youtube", f"{english} A Little Happiness")
+            add("youtube", f"{primary} {ost.name}", category="ost_singles")
+    # Top OST singles on Bilibili
+    for ost in profile.discography.ost_singles[:8]:
+        add("bilibili", f"{primary} {ost.name}", category="ost_singles")
     # Variety show singles
     for vs in profile.discography.variety_show_singles:
-        add("youtube", f"{primary} {vs.name} 单曲 {vs.source}")
-    add("bilibili", f"{primary} 小幸运")
-    add("bilibili", f"{primary} 影视歌曲")
-    add("bilibili", f"{primary} 梦想的声音 单曲 数字发行")
+        add("youtube", f"{primary} {vs.name} 单曲 {vs.source}", category="ost_singles")
+        add("bilibili", f"{primary} {vs.name} {vs.source}", category="variety")
+    add("bilibili", f"{primary} 影视歌曲", category="ost_singles")
 
     # --- Concert queries ---
     for concert in profile.discography.concerts:
-        add("youtube", f"{primary} {concert.name}")
+        add("youtube", f"{primary} {concert.name}", category="concerts")
         for alias in concert.aliases:
-            add("youtube", f"{primary} {alias}")
+            add("youtube", f"{primary} {alias}", category="concerts")
         for venue in concert.venues:
-            add("youtube", f"{primary} {concert.aliases[0] if concert.aliases else concert.name} {venue}")
-        add("bilibili", f"{primary} {concert.name}")
+            alias_or_name = concert.aliases[0] if concert.aliases else concert.name
+            add("youtube", f"{primary} {alias_or_name} {venue}", category="concerts")
+        add("bilibili", f"{primary} {concert.name}", category="concerts")
         for alias in concert.aliases:
-            add("bilibili", f"{primary} {alias}")
-    add("youtube", f"{primary} 演唱会 full")
-    add("youtube", f"{english} IF Only concert")
-    add("bilibili", f"{primary} 演唱会 全场", page=1)
-    add("bilibili", f"{primary} 演唱会 全场", page=2)
-    add("google", f"{primary} 演唱会 全场 site:bilibili.com")
-    # S.H.E concerts
-    for sc in profile.discography.she_concerts:
-        add("youtube", f"{sc.name}")
-        add("bilibili", f"{sc.name}")
-    add("youtube", f"SHE 演唱会")
-    add("bilibili", f"SHE {primary} 演唱会")
+            add("bilibili", f"{primary} {alias}", category="concerts")
+    add("youtube", f"{primary} 演唱会 full", category="concerts")
+    add("bilibili", f"{primary} 演唱会 全场", page=1, category="concerts")
+    add("bilibili", f"{primary} 演唱会 全场", page=2, category="concerts")
+    add("google", f"{primary} 演唱会 全场 site:bilibili.com", category="concerts")
+    add("google", f"{primary} {english} concert live", category="concerts")
+    # Group concerts
+    if has_group:
+        for sc in profile.discography.group_concerts:
+            add("youtube", f"{sc.name}", category="concerts")
+            add("bilibili", f"{sc.name}", category="concerts")
+        add("youtube", f"{group_name} 演唱会", category="concerts")
+        add("bilibili", f"{group_name} {primary} 演唱会", category="concerts")
 
     # --- Variety show queries ---
     for show in profile.discography.variety_shows:
-        add("youtube", f"{primary} {show.name}")
-        add("bilibili", f"{primary} {show.name}")
-    add("youtube", f"{primary} 综艺")
-    add("youtube", f"{primary} 节目")
-    add("youtube", f"SHE 康熙来了")
-    add("bilibili", f"梦想的声音 {primary}", page=1)
-    add("bilibili", f"梦想的声音 {primary}", page=2)
-    add("bilibili", f"{primary} 综艺")
+        add("youtube", f"{primary} {show.name}", category="variety")
+        add("bilibili", f"{primary} {show.name}", category="variety")
+    add("youtube", f"{primary} 综艺", category="variety")
+    add("youtube", f"{primary} 节目", category="variety")
+    if has_group:
+        # Group variety show appearances
+        for show in profile.discography.variety_shows:
+            if show.network:
+                add("youtube", f"{group_name} {show.name}", category="variety")
+    add("bilibili", f"{primary} 综艺", category="variety")
+    add("youtube", f"{primary} 现场 live", category="variety")
+    add("bilibili", f"{primary} 现场", category="variety")
+    add("google", f"{primary} 综艺 site:bilibili.com", category="variety")
     # Variety show specific performances
     for vs in profile.discography.variety_show_singles:
-        add("youtube", f"{primary} {vs.source} {vs.name}")
-    add("youtube", f"{primary} 跨年 演唱 表演")
-    add("bilibili", f"{primary} 跨年 跨年晚会")
-    add("youtube", f"{primary} 我想和你唱 第三季 2018")
-    add("bilibili", f"{primary} 我想和你唱 2018 湖南卫视")
+        add("youtube", f"{primary} {vs.source} {vs.name}", category="variety")
+    add("youtube", f"{primary} 跨年 演唱 表演", category="variety")
+    add("bilibili", f"{primary} 跨年 跨年晚会", category="variety")
 
     # --- Interview queries ---
     for name in [primary, english]:
-        add("youtube", f"{name} 采访" if name == primary else f"{name} interview")
-    add("youtube", f"{primary} 专访 2020")
-    add("youtube", f"{primary} 专访 2021")
-    add("youtube", f"{primary} 专访 2023")
-    add("youtube", f"{primary} 专访 2025 田调 巡演")
-    add("bilibili", f"{primary} 采访")
-    add("bilibili", f"{primary} 专访")
-    add("bilibili", f"{primary} 金曲奖 专访")
-    add("google", f"{english} interview 2021 2022")
-    add("google", f"{primary} 深度专访")
+        add("youtube", f"{name} 采访" if name == primary else f"{name} interview", category="interviews")
+    add("bilibili", f"{primary} 采访", category="interviews")
+    add("bilibili", f"{primary} 专访", category="interviews")
+    add("google", f"{english} interview", category="interviews")
+    add("google", f"{primary} 深度专访", category="interviews")
     # Album-era interviews
     for album in profile.discography.solo_albums:
-        add("youtube", f"{primary} 专访 {album.year} {album.name}")
-    add("youtube", f"Hebe {primary} 访谈")
-    # Specific interviewers
-    add("youtube", f"{primary} 理科太太 采访")
-    add("youtube", f"{primary} 唐绮阳 访谈")
-    add("bilibili", f"{primary} 理科太太")
+        add("youtube", f"{primary} 专访 {album.year} {album.name}", category="interviews")
+    # Notable interviewers from YAML
+    for interviewer in profile.discography.notable_interviewers:
+        add("youtube", f"{primary} {interviewer} 采访", category="interviews")
+        add("bilibili", f"{primary} {interviewer}", category="interviews")
+    # Interview channels (top 8)
+    for channel in profile.discography.interview_channels[:8]:
+        add("youtube", f"{primary} {channel}", category="interviews")
+        add("bilibili", f"{primary} {channel}", category="interviews")
 
-    # --- S.H.E MV queries ---
-    for name in [group_name] + group_aliases[:1]:
-        add("youtube", f"{name} MV official")
-    for mv in profile.discography.she_mvs:
-        add("youtube", f"SHE {mv} MV")
-    add("bilibili", f"SHE MV")
-    # Key S.H.E MVs on Bilibili
-    for mv in profile.discography.she_mvs[:10]:
-        add("bilibili", f"SHE {mv} MV")
+    # --- Group MV queries ---
+    if has_group:
+        for name in [group_name] + group_aliases[:1]:
+            add("youtube", f"{name} MV official", category="group_mv")
+        for mv in profile.discography.group_mvs:
+            add("youtube", f"{group_name} {mv} MV", category="group_mv")
+        add("bilibili", f"{group_name} MV", category="group_mv")
+        # Key group MVs on Bilibili
+        for mv in profile.discography.group_mvs[:10]:
+            add("bilibili", f"{group_name} {mv} MV", category="group_mv")
 
     # --- Collaboration queries ---
     for collab in profile.discography.collaborators:
         for song in collab.songs:
-            add("youtube", f"{primary} {collab.name} {song}")
-            add("bilibili", f"{primary} {collab.name} {song}")
+            add("youtube", f"{primary} {collab.name} {song}", category="collabs")
+            add("bilibili", f"{primary} {collab.name} {song}", category="collabs")
         if not collab.songs:
-            add("youtube", f"{primary} {collab.name}")
-            add("bilibili", f"{primary} {collab.name}")
+            add("youtube", f"{primary} {collab.name}", category="collabs")
+            add("bilibili", f"{primary} {collab.name}", category="collabs")
         for alias in collab.aliases:
-            add("youtube", f"{alias} {primary}")
-    add("youtube", f"{primary} 合唱")
-    add("bilibili", f"{primary} 合唱")
-    add("bilibili", f"{primary} 合作")
+            add("youtube", f"{alias} {primary}", category="collabs")
+    add("youtube", f"{primary} 合唱", category="collabs")
+    add("bilibili", f"{primary} 合唱", category="collabs")
+    add("bilibili", f"{primary} 合作", category="collabs")
+    add("google", f"{primary} 合唱 合作 site:bilibili.com", category="collabs")
 
     return queries
 
 
-def compare_with_search_plan(profile: ArtistProfile | None = None) -> dict:
-    """Compare generated queries with search_plan.py for coverage analysis."""
-    from search_plan import SEARCH_PLAN
+def build_search_plan(profile: ArtistProfile | None = None) -> list[dict]:
+    """
+    Build a SEARCH_PLAN-compatible structure from generated queries.
 
+    Returns list of file specs compatible with pipeline.py's expected format:
+    [{"file_id": int, "output_path": str, "title": str, "description": str, "searches": [...]}]
+    """
     if profile is None:
         profile = load_profile()
 
-    generated = generate_queries(profile)
-    gen_set = {(q["tool"], q["query"]) for q in generated}
+    queries = generate_queries(profile)
+    primary = profile.artist.names.primary
 
-    plan_queries = []
-    for file_spec in SEARCH_PLAN:
-        for s in file_spec["searches"]:
-            plan_queries.append((s["tool"], s["query"]))
-    plan_set = set(plan_queries)
+    # Group queries by category
+    by_category: dict[str, list[dict]] = {}
+    for q in queries:
+        cat = q.get("category", "")
+        if cat:
+            by_category.setdefault(cat, []).append(q)
 
-    return {
-        "generated_count": len(generated),
-        "plan_count": len(plan_queries),
-        "plan_unique": len(plan_set),
-        "overlap": len(gen_set & plan_set),
-        "only_in_generated": len(gen_set - plan_set),
-        "only_in_plan": len(plan_set - gen_set),
-        "missing_from_generated": sorted(plan_set - gen_set),
-    }
+    plan = []
+    for cat in profile.categories:
+        searches = by_category.get(cat.key, [])
+        plan.append({
+            "file_id": cat.id,
+            "output_path": cat.output_path,
+            "title": f"{primary}{cat.label}",
+            "description": cat.description,
+            "searches": searches,
+        })
+
+    return plan
 
 
 if __name__ == "__main__":
@@ -189,18 +209,20 @@ if __name__ == "__main__":
     queries = generate_queries(profile)
     print(f"Generated {len(queries)} queries")
 
-    by_tool = {}
+    by_tool: dict[str, list] = {}
     for q in queries:
         by_tool.setdefault(q["tool"], []).append(q)
     for tool, qs in sorted(by_tool.items()):
         print(f"  {tool}: {len(qs)}")
 
-    print("\n--- Coverage comparison with search_plan.py ---")
-    stats = compare_with_search_plan(profile)
-    for k, v in stats.items():
-        if k != "missing_from_generated":
-            print(f"  {k}: {v}")
-    if stats["missing_from_generated"]:
-        print(f"\n  Top 10 queries only in search_plan.py:")
-        for tool, query in stats["missing_from_generated"][:10]:
-            print(f"    [{tool}] {query}")
+    by_cat: dict[str, int] = {}
+    for q in queries:
+        by_cat[q["category"]] = by_cat.get(q["category"], 0) + 1
+    print("\nBy category:")
+    for cat, count in sorted(by_cat.items()):
+        print(f"  {cat}: {count}")
+
+    print("\n--- Search plan ---")
+    plan = build_search_plan(profile)
+    for spec in plan:
+        print(f"  file_{spec['file_id']}: {spec['title']} ({len(spec['searches'])} searches)")

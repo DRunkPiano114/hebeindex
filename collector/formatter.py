@@ -10,25 +10,54 @@ Falls back to a deterministic template if the LLM call fails.
 
 from __future__ import annotations
 
-import json
 import logging
 import time
 from datetime import datetime
 
+from artist_profile import ArtistProfile
+from claude_llm import format_markdown
+
 logger = logging.getLogger(__name__)
 
+
 # ---------------------------------------------------------------------------
-# Per-file formatting prompt
+# Build formatting prompt from profile
 # ---------------------------------------------------------------------------
 
-FORMAT_SYSTEM_PROMPT = """你是一个专业的华语音乐资料整理编辑。你的任务是将搜索结果 JSON 整理成格式规范的 Markdown 文件。
+def build_format_prompt(profile: ArtistProfile) -> str:
+    """Build a formatting system prompt from artist profile data."""
+    primary = profile.artist.names.primary
+    english = profile.artist.names.english
+
+    # Album summary
+    albums = ", ".join(
+        f"{a.name}({a.year})" for a in profile.discography.solo_albums
+    )
+
+    # Concert summary
+    concerts = ", ".join(
+        f"{c.name}({c.years})" for c in profile.discography.concerts[:3]
+    )
+
+    # Group info
+    group_info = ""
+    if profile.group:
+        members = ", ".join(profile.group.members)
+        group_info = f"- {profile.group.name} 成员：{members}"
+
+    # Variety show summary
+    shows = ", ".join(
+        f"{v.name}" for v in profile.discography.variety_shows[:3]
+    )
+
+    return f"""你是一个专业的华语音乐资料整理编辑。你的任务是将搜索结果 JSON 整理成格式规范的 Markdown 文件。
 
 ## 你必须遵守的规则
 
 1. **只使用提供的 JSON 数据**，不得编造任何链接、标题、播放量或其他信息。
 2. **每条结果都必须出现在输出中**，不得遗漏任何一条。
 3. 根据内容类型进行智能分组（如按专辑、按节目、按年代等）。
-4. 为分组和条目添加有意义的上下文说明（如"这首歌是《我的少女时代》主题曲"）。
+4. 为分组和条目添加有意义的上下文说明。
 5. 区分官方版本和非官方版本（翻唱、歌词版、live 版等）。
 
 ## 输出格式
@@ -40,7 +69,7 @@ FORMAT_SYSTEM_PROMPT = """你是一个专业的华语音乐资料整理编辑。
 
 ---
 
-## 分组名称（如：专辑《To Hebe》/ 梦想的声音第X期）
+## 分组名称
 
 | 内容名称 | 链接 | 平台 | 发布日期 | 播放量 | 频道/作者 | 备注 |
 |---------|------|------|---------|-------|---------|------|
@@ -56,60 +85,44 @@ FORMAT_SYSTEM_PROMPT = """你是一个专业的华语音乐资料整理编辑。
 - verified=false 且 verify_status=0：加 ⚠️ 标记
 - verified=false 且 verify_status 为 404 等：不应出现在数据中（已被过滤）
 
-## 田馥甄背景知识（用于分组和添加上下文）
+## {primary}（{english}）背景知识（用于分组和添加上下文）
 
-- 个人专辑（共5张）：To Hebe(2010) / My Love(2011) / 渺小(2013) / 日常(2016) / 无人知晓(2020)
-- 重要单曲：小幸运（《我的少女时代》主题曲）、爱了很久的朋友（《后来的我们》插曲）
-- 演唱会：如果世界巡迴演唱会(2014–2017)、一一巡迴演唱会(2020–2023)
-- 综艺：梦想的声音（2016，浙江卫视）
-- S.H.E 成员：田馥甄(Hebe)、任家萱(Selina)、陈嘉桦(Ella)
+- 个人专辑：{albums}
+- 演唱会：{concerts}
+- 综艺：{shows}
+{group_info}
 
 只输出最终的 Markdown 内容，不要解释你的分组思路。"""
 
 
 def format_file_with_llm(
     proc_data: dict,
-    router,
+    profile: ArtistProfile,
     max_retries: int = 2,
 ) -> str:
     """Use LLM to organize and format one file's results into Markdown.
 
     Each call is independent and small (~3-5K input tokens).
-    Uses the LiteLLM Router for Gemini → Sonnet → OpenAI model fallback.
-    Retries with exponential backoff before falling back to template.
+    Uses claude CLI for the LLM call.
+    Retries before falling back to template.
     """
-    results = proc_data["results"]
     title = proc_data["title"]
-    description = proc_data["description"]
-    total = proc_data["total_results"]
 
-    compact_results = _compact_results(results)
+    compact_results = _compact_results(proc_data["results"])
+    compact_data = {
+        "title": title,
+        "description": proc_data["description"],
+        "total_results": proc_data["total_results"],
+        "results": compact_results,
+    }
 
-    user_msg = (
-        f"请将以下搜索结果整理成 Markdown 文件。\n\n"
-        f"文件标题：{title}\n"
-        f"文件说明：{description}\n"
-        f"结果总数：{total}\n"
-        f"今日日期：{datetime.now().strftime('%Y-%m-%d')}\n\n"
-        f"搜索结果 JSON：\n```json\n{json.dumps(compact_results, ensure_ascii=False)}\n```"
-    )
+    system_prompt = build_format_prompt(profile)
 
     for attempt in range(max_retries + 1):
         try:
-            response = router.completion(
-                model="primary",
-                max_tokens=64000,
-                messages=[
-                    {"role": "system", "content": FORMAT_SYSTEM_PROMPT},
-                    {"role": "user", "content": user_msg},
-                ],
-                temperature=0.3,
-            )
+            md = format_markdown(compact_data, system_prompt)
 
-            content = response.choices[0].message.content or ""
-            out_tokens = response.usage.completion_tokens
-
-            if out_tokens == 0 or not content.strip():
+            if not md.strip():
                 logger.warning(
                     "LLM returned empty for '%s' (attempt %d/%d)",
                     title, attempt + 1, max_retries + 1,
@@ -118,12 +131,7 @@ def format_file_with_llm(
                     time.sleep(2 ** attempt)
                 continue
 
-            md = _strip_code_fences(content)
-            logger.info(
-                "LLM formatted '%s': %d chars, %d input / %d output tokens",
-                title, len(md),
-                response.usage.prompt_tokens, out_tokens,
-            )
+            logger.info("LLM formatted '%s': %d chars", title, len(md))
             return md
 
         except Exception as exc:
@@ -152,17 +160,6 @@ def _compact_results(results: list[dict]) -> list[dict]:
                 c[key] = r[key]
         compact.append(c)
     return compact
-
-
-def _strip_code_fences(text: str) -> str:
-    """Remove wrapping ```markdown ... ``` if LLM added them."""
-    text = text.strip()
-    if text.startswith("```"):
-        first_nl = text.index("\n") if "\n" in text else len(text)
-        text = text[first_nl + 1:]
-    if text.endswith("```"):
-        text = text[:-3]
-    return text.strip()
 
 
 # ---------------------------------------------------------------------------

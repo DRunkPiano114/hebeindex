@@ -1,0 +1,562 @@
+artist:
+  names:
+    primary: "周杰伦"
+    english: "Jay Chou"
+    aliases: ["周杰倫", "Jay", "杰伦"]
+  official_channels:
+    - "周杰倫 Jay Chou"
+    - "杰威尔音乐JVR"
+    - "JVR Music"
+    - "Jay Chou - Topic"
+    - "周杰伦 - 主題"
+  labels: ["杰威尔音乐", "JVR Music", "阿尔发音乐", "Sony Music"]
+  birth_year: 1979
+  genre: "Mandopop"
+  awards:
+    - "第15届金曲奖最佳国语男演唱人（2004）"
+    - "第14届金曲奖最佳作曲人（2003）"
+    - "第13届金曲奖最佳流行音乐专辑（2002）"
+  social_links:
+    instagram: "https://www.instagram.com/jaychou/"
+    facebook: "https://www.facebook.com/jay/"
+    youtube: "https://www.youtube.com/@jaychou"
+
+discography:
+  solo_albums:
+    - name: "Jay"
+      year: 2000
+      tracks:
+        - "可爱女人"
+        - "完美主义"
+        - "星晴"
+        - "娘子"
+        - "斗牛"
+        - "黑色幽默"
+        - "伊斯坦堡"
+        - "印第安老斑鸠"
+        - "龙卷风"
+        - "反方向的钟"
+    - name: "范特西"
+      year: 2001
+      tracks:
+        - "爱在西元前"
+        - "爸我回来了"
+        - "简单爱"
+        - "忍者"
+        - "开不了口"
+        - "上海一九四三"
+        - "对不起"
+        - "威廉古堡"
+        - "双截棍"
+        - "安静"
+    - name: "八度空间"
+      year: 2002
+      tracks:
+        - "半兽人"
+        - "半岛铁盒"
+        - "暗号"
+        - "龙拳"
+        - "火车叨位去"
+        - "分裂"
+        - "爷爷泡的茶"
+        - "回到过去"
+        - "米兰的小铁匠"
+        - "最后的战役"
+    - name: "叶惠美"
+      year: 2003
+      tracks:
+        - "以父之名"
+        - "懦夫"
+        - "晴天"
+        - "三年二班"
+        - "东风破"
+        - "你听得到"
+        - "同一种调调"
+        - "她的睫毛"
+        - "爱情悬崖"
+        - "梯田"
+        - "双刀"
+    - name: "七里香"
+      year: 2004
+      tracks:
+        - "我的地盘"
+        - "七里香"
+        - "借口"
+        - "外婆"
+        - "将军"
+        - "搁浅"
+        - "乱舞春秋"
+        - "困兽之斗"
+        - "园游会"
+        - "止战之殇"
+    - name: "十一月的萧邦"
+      year: 2005
+      tracks:
+        - "夜曲"
+        - "蓝色风暴"
+        - "发如雪"
+        - "黑色毛衣"
+        - "四面楚歌"
+        - "枫"
+        - "浪漫手机"
+        - "逆鳞"
+        - "麦芽糖"
+        - "珊瑚海"
+        - "飘移"
+        - "一路向北"
+    - name: "依然范特西"
+      year: 2006
+      tracks:
+        - "夜的第七章"
+        - "听妈妈的话"
+        - "千里之外"
+        - "本草纲目"
+        - "退后"
+        - "红模仿"
+        - "心雨"
+        - "白色风车"
+        - "迷迭香"
+        - "菊花台"
+    - name: "我很忙"
+      year: 2007
+      tracks:
+        - "牛仔很忙"
+        - "彩虹"
+        - "青花瓷"
+        - "阳光宅男"
+        - "蒲公英的约定"
+        - "无双"
+        - "我不配"
+        - "扯"
+        - "甜甜的"
+        - "最长的电影"
+    - name: "魔杰座"
+      year: 2008
+      tracks:
+        - "龙战骑士"
+        - "给我一首歌的时间"
+        - "蛇舞"
+        - "花海"
+        - "魔术先生"
+        - "说好的幸福呢"
+        - "兰亭序"
+        - "流浪诗人"
+        - "时光机"
+        - "乔克叔叔"
+        - "稻香"
+    - name: "跨时代"
+      year: 2010
+      tracks:
+        - "跨时代"
+        - "说了再见"
+        - "烟花易冷"
+        - "免费教学录影带"
+        - "好久不见"
+        - "雨下一整晚"
+        - "嘻哈空姐"
+        - "我落泪情绪零碎"
+        - "爱的飞行日记"
+        - "自导自演"
+        - "超人不会飞"
+    - name: "惊叹号"
+      year: 2011
+      tracks:
+        - "惊叹号"
+        - "迷魂曲"
+        - "Mine Mine"
+        - "公主病"
+        - "你好吗"
+        - "疗伤烧肉粽"
+        - "琴伤"
+        - "水手怕水"
+        - "世界未末日"
+        - "皮影戏"
+        - "超跑女神"
+    - name: "十二新作"
+      year: 2012
+      tracks:
+        - "四季列车"
+        - "手语"
+        - "公公偏头痛"
+        - "明明就"
+        - "傻笑"
+        - "比较大的大提琴"
+        - "爱你没差"
+        - "红尘客栈"
+        - "梦想启动"
+        - "大笨钟"
+        - "乌克丽丽"
+        - "哪里都是你"
+    - name: "哎呦，不错哦"
+      year: 2014
+      tracks:
+        - "阳明山"
+        - "窃爱"
+        - "天涯过客"
+        - "怎么了"
+        - "一口气全念对"
+        - "我要夏天"
+        - "手写的从前"
+        - "鞋子特大号"
+        - "听爸爸的话"
+        - "美人鱼"
+        - "听见下雨的声音"
+        - "算什么男人"
+    - name: "周杰伦的床边故事"
+      year: 2016
+      tracks:
+        - "床边故事"
+        - "说走就走"
+        - "一点点"
+        - "前世情人"
+        - "英雄"
+        - "不该"
+        - "土耳其冰淇淋"
+        - "告白气球"
+        - "Now You See Me"
+        - "爱情废柴"
+    - name: "最伟大的作品"
+      year: 2022
+      tracks:
+        - "最伟大的作品"
+        - "还在流浪"
+        - "说好不哭"
+        - "Mojito"
+        - "我是如此相信"
+        - "倒影"
+        - "红颜如霜"
+        - "不爱我就拉倒"
+        - "等你下课"
+        - "粉色海洋"
+        - "错过的烟火"
+        - "圣诞星"
+
+  ost_singles:
+    - name: "双截棍"
+      source: "头文字D"
+      year: 2005
+    - name: "一路向北"
+      source: "头文字D"
+      year: 2005
+    - name: "飘移"
+      source: "头文字D"
+      year: 2005
+    - name: "霍元甲"
+      source: "霍元甲"
+      year: 2006
+    - name: "菊花台"
+      source: "满城尽带黄金甲"
+      year: 2006
+    - name: "不能说的秘密"
+      source: "不能说的秘密"
+      year: 2007
+    - name: "蒲公英的约定"
+      source: "不能说的秘密"
+      year: 2007
+    - name: "稻香"
+      source: "功夫灌篮"
+      year: 2008
+    - name: "天地一斗"
+      source: "功夫灌篮"
+      year: 2008
+    - name: "说了再见"
+      source: "大灌篮"
+      year: 2008
+    - name: "天台爱情"
+      source: "天台"
+      year: 2013
+    - name: "大魔术师"
+      source: "惊天魔盗团2"
+      year: 2016
+    - name: "我是如此相信"
+      source: "天火"
+      year: 2019
+    - name: "说好不哭"
+      source: ""
+      year: 2019
+    - name: "Mojito"
+      source: ""
+      year: 2020
+    - name: "等你下课"
+      source: ""
+      year: 2018
+
+  variety_show_singles: []
+
+  concerts:
+    - name: "The One 世界巡回演唱会"
+      years: "2001-2002"
+      aliases: ["The One"]
+      venues: ["台北", "香港红馆"]
+    - name: "无与伦比 世界巡回演唱会"
+      years: "2004-2006"
+      aliases: ["无与伦比演唱会", "Incomparable"]
+      venues: ["台北小巨蛋", "香港红馆", "北京", "上海", "新加坡"]
+    - name: "世界巡回演唱会"
+      years: "2007-2008"
+      aliases: ["Jay Chou World Tour"]
+      venues: ["台北小巨蛋", "香港红馆", "北京", "上海"]
+    - name: "超时代 世界巡回演唱会"
+      years: "2010-2013"
+      aliases: ["超时代演唱会", "The Era"]
+      venues: ["台北小巨蛋", "高雄巨蛋", "香港红馆", "北京", "上海", "新加坡", "伦敦"]
+    - name: "魔天伦 世界巡回演唱会"
+      years: "2013-2015"
+      aliases: ["魔天伦演唱会", "Opus Jay"]
+      venues: ["台北小巨蛋", "香港红馆", "北京", "上海", "伦敦", "悉尼"]
+    - name: "地表最强 世界巡回演唱会"
+      years: "2016-2019"
+      aliases: ["地表最强演唱会", "The Invincible"]
+      venues: ["台北小巨蛋", "高雄巨蛋", "香港红馆", "北京", "上海", "伦敦", "巴黎"]
+    - name: "嘉年华 世界巡回演唱会"
+      years: "2019-2025"
+      aliases: ["嘉年华演唱会", "Carnival"]
+      venues: ["台北小巨蛋", "高雄", "香港", "北京", "上海", "新加坡", "伦敦", "悉尼", "杭州", "深圳", "天津"]
+
+  group_concerts: []
+
+  variety_shows:
+    - name: "中国好声音"
+      network: "浙江卫视"
+    - name: "周游记"
+      network: "浙江卫视"
+    - name: "康熙来了"
+      network: "中天电视"
+    - name: "快乐大本营"
+      network: "湖南卫视"
+    - name: "天天向上"
+      network: "湖南卫视"
+    - name: "鲁豫有约"
+      network: ""
+    - name: "金曲奖"
+      network: ""
+    - name: "娱乐百分百"
+      network: "三立电视"
+    - name: "非常静距离"
+      network: ""
+    - name: "最强大脑"
+      network: "江苏卫视"
+    - name: "这就是街舞"
+      network: "优酷"
+    - name: "中国新歌声"
+      network: "浙江卫视"
+    - name: "梦想的声音"
+      network: "浙江卫视"
+    - name: "春节联欢晚会"
+      network: "CCTV"
+
+  collaborators:
+    - name: "费玉清"
+      aliases: ["小哥"]
+      songs: ["千里之外", "刀马旦"]
+    - name: "Lara梁心颐"
+      aliases: ["Lara"]
+      songs: ["珊瑚海"]
+    - name: "张惠妹"
+      aliases: ["阿妹", "aMEI"]
+      songs: ["不该"]
+    - name: "阿信"
+      aliases: ["五月天阿信"]
+      songs: ["说好不哭"]
+    - name: "温岚"
+      aliases: []
+      songs: ["屋顶"]
+    - name: "袁咏琳"
+      aliases: ["Cindy"]
+      songs: ["怎么了"]
+    - name: "林俊杰"
+      aliases: ["JJ Lin"]
+      songs: []
+    - name: "蔡依林"
+      aliases: ["Jolin"]
+      songs: ["布拉格广场"]
+    - name: "杨瑞代"
+      aliases: ["Gary Yang"]
+      songs: ["阳光宅男"]
+    - name: "派伟俊"
+      aliases: ["Patrick Brasca"]
+      songs: ["Try"]
+    - name: "南拳妈妈"
+      aliases: []
+      songs: ["牡丹江"]
+    - name: "黄俊郎"
+      aliases: []
+      songs: ["夜的第七章"]
+    - name: "方文山"
+      aliases: []
+      songs: []
+    - name: "周董"
+      aliases: []
+      songs: []
+    - name: "陈信宏"
+      aliases: ["阿信"]
+      songs: []
+    - name: "黄明志"
+      aliases: ["Namewee"]
+      songs: ["飘向北方"]
+
+  group_mvs: []
+
+  venues:
+    - "小巨蛋"
+    - "红馆"
+    - "紅館"
+    - "巨蛋"
+    - "体育馆"
+    - "體育館"
+    - "工人体育场"
+    - "工體"
+    - "梅赛德斯奔驰文化中心"
+    - "O2 Arena"
+
+  interview_channels:
+    - "娱乐星天地"
+    - "ETtoday"
+    - "TVBS"
+    - "三立新闻"
+    - "东森新闻"
+    - "中时"
+    - "联合报"
+    - "自由时报"
+    - "GQ"
+    - "ELLE"
+    - "Vogue"
+    - "BAZAAR"
+    - "Marie Claire"
+    - "鲁豫有约"
+    - "央视"
+    - "凤凰卫视"
+
+  notable_interviewers:
+    - "鲁豫"
+    - "陈鲁豫"
+
+  western_artist_blacklist:
+    - "rick astley"
+    - "taylor swift"
+    - "ed sheeran"
+    - "adele"
+    - "beyonce"
+    - "beyoncé"
+    - "ariana grande"
+    - "billie eilish"
+    - "dua lipa"
+    - "lady gaga"
+    - "katy perry"
+    - "justin bieber"
+    - "bruno mars"
+    - "drake"
+    - "eminem"
+    - "rihanna"
+    - "shakira"
+    - "the weeknd"
+    - "post malone"
+    - "harry styles"
+    - "olivia rodrigo"
+    - "doja cat"
+    - "miley cyrus"
+    - "selena gomez"
+    - "charlie puth"
+    - "maroon 5"
+    - "coldplay"
+    - "imagine dragons"
+    - "one direction"
+    - "bts"
+    - "blackpink"
+    - "twice"
+    - "stray kids"
+    - "aespa"
+    - "newjeans"
+    - "ive"
+    - "nct"
+    - "exo"
+    - "red velvet"
+    - "jay-z"
+    - "jay z"
+
+  other_chinese_artist_blacklist:
+    - "田馥甄"
+    - "蔡依林"
+    - "林俊杰"
+    - "林俊傑"
+    - "王力宏"
+    - "陶喆"
+    - "张惠妹"
+    - "張惠妹"
+    - "萧敬腾"
+    - "蕭敬騰"
+    - "李荣浩"
+    - "李榮浩"
+    - "邓紫棋"
+    - "鄧紫棋"
+    - "华晨宇"
+    - "華晨宇"
+    - "薛之谦"
+    - "薛之謙"
+    - "毛不易"
+    - "周深"
+    - "张碧晨"
+    - "張碧晨"
+    - "李宇春"
+    - "张靓颖"
+    - "張靚穎"
+    - "孙燕姿"
+    - "孫燕姿"
+    - "梁静茹"
+    - "梁靜茹"
+    - "王菲"
+    - "那英"
+
+  wrong_context_patterns:
+    - "jay-z"
+    - "jay z "
+    - "jay walk"
+    - "jaywalk"
+    - "jaywalking"
+
+categories:
+  - id: 2
+    key: "personal_mv"
+    label: "個人MV"
+    sub: "Official MV & Lyric Video"
+    output_path: "MV/个人MV.md"
+    description: "按专辑分组，每首MV一行，含：歌名、链接、平台、发布日期、播放量、导演/频道、简介。"
+  - id: 3
+    key: "ost_singles"
+    label: "影視單曲"
+    sub: "OST & Singles"
+    output_path: "歌曲与合作/影视单曲.md"
+    description: "影视主题曲、官方数字单曲等非专辑收录作品。"
+  - id: 4
+    key: "concerts"
+    label: "演唱會"
+    sub: "Concert & Live"
+    output_path: "演唱会/演唱会.md"
+    description: "个人演唱会，区分官方影像、现场录像、精彩片段。"
+  - id: 5
+    key: "variety"
+    label: "綜藝節目"
+    sub: "TV Shows & Variety"
+    output_path: "节目与访谈/综艺节目.md"
+    description: "综艺节目出场、表演片段。"
+  - id: 6
+    key: "interviews"
+    label: "採訪訪談"
+    sub: "Interviews & Press"
+    output_path: "节目与访谈/采访访谈.md"
+    description: "专访、采访、金曲奖访谈等。"
+  - id: 8
+    key: "collabs"
+    label: "合唱合作"
+    sub: "Collabs & Features"
+    output_path: "歌曲与合作/合唱合作.md"
+    description: "与其他歌手的合唱、合作视频。"
+
+classification:
+  priority:
+    - "personal_mv"
+    - "ost_singles"
+    - "collabs"
+    - "concerts"
+    - "variety"
+    - "interviews"

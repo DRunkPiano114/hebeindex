@@ -261,10 +261,10 @@ class TestFileWriter:
         assert (tmp_path / "file.md").read_text(encoding="utf-8") == "new content"
 
     def test_constructor_creates_output_subdirs(self, tmp_path):
-        """FileWriter 构造函数应预创建所有 OUTPUT_SUBDIRS。"""
-        from config import OUTPUT_SUBDIRS
-        writer = FileWriter(str(tmp_path))
-        for sub in OUTPUT_SUBDIRS:
+        """FileWriter 构造函数应预创建指定的 subdirs。"""
+        subdirs = ["mv", "concerts", "shows"]
+        writer = FileWriter(str(tmp_path), subdirs=subdirs)
+        for sub in subdirs:
             assert (tmp_path / sub).is_dir(), f"Expected subdir '{sub}' to exist"
 
     def test_write_returns_full_path_in_message(self, tmp_path):

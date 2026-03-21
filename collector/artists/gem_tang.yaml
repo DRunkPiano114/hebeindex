@@ -1,0 +1,505 @@
+artist:
+  names:
+    primary: "邓紫棋"
+    english: "G.E.M."
+    aliases: ["GEM", "紫棋", "Gloria Tang", "鄧紫棋", "邓诗颖", "Gloria Tang Sze-wing"]
+  official_channels:
+    - "GEM鄧紫棋"
+    - "G.E.M. - Topic"
+    - "邓紫棋 - 主题"
+    - "鄧紫棋 - 主題"
+    - "G Nation"
+    - "Hummingbird Music"
+    - "蜂鸟音乐"
+  labels: ["G Nation", "蜂鸟音乐", "Hummingbird Music"]
+  birth_year: 1991
+  genre: "Mandopop"
+  awards:
+    - "MTV EMA 最佳大中华区艺人（2016）"
+    - "第31届金曲奖评审团奖（2020）"
+    - "Nickelodeon Kids' Choice Awards 最受欢迎亚洲艺人（2014）"
+    - "BBC百大女性（2018）"
+  social_links:
+    facebook: "https://www.facebook.com/GEMblog"
+    instagram: "https://www.instagram.com/gem0816/"
+    youtube: "https://www.youtube.com/@gem0816"
+
+discography:
+  solo_albums:
+    - name: "G.E.M."
+      year: 2008
+      tracks:
+        - "等一个他"
+        - "Where Did U Go"
+        - "回忆的沙漏"
+        - "爱现在的我"
+        - "睡公主"
+    - name: "18..."
+      year: 2009
+      tracks:
+        - "All About U"
+        - "Game Over"
+        - "想讲你知"
+        - "A.I.N.Y. (爱你)"
+        - "Mascara (烟熏妆)"
+        - "我不懂爱"
+        - "塞纳河"
+        - "意式恋爱"
+        - "G.E.M."
+        - "18"
+    - name: "MySecret"
+      year: 2010
+      tracks:
+        - "One Button"
+        - "Good to be Bad"
+        - "Get Over You"
+        - "美好的旧时光"
+        - "寂寞星球的小玫瑰"
+        - "The Voice Within"
+        - "我的秘密"
+        - "末日"
+        - "Twinkle II"
+        - "Say it Loud"
+    - name: "Xposed"
+      year: 2012
+      tracks:
+        - "What Have U Done"
+        - "下一秒"
+        - "Someday I'll Fly"
+        - "泡沫"
+        - "潜意式的残酷"
+        - "Oh Boy"
+        - "After Tonight"
+        - "失真"
+        - "奇迹"
+        - "不存在的存在"
+    - name: "新的心跳"
+      year: 2015
+      tracks:
+        - "多远都要在一起"
+        - "再见"
+        - "新的心跳"
+        - "来自天堂的魔鬼"
+        - "盲点"
+        - "单行的轨道"
+        - "一路逆风"
+        - "于是"
+        - "瞬间"
+        - "查克靠近"
+    - name: "摩天动物园"
+      year: 2019
+      tracks:
+        - "摩天动物园"
+        - "Fly Away"
+        - "透明"
+        - "很久以后"
+        - "Walk On Water"
+        - "萤火"
+        - "灰狼"
+        - "差不多姑娘"
+        - "好想好想你"
+        - "别勉强"
+        - "多美丽"
+        - "句号"
+        - "依然睡公主"
+    - name: "启示录"
+      year: 2022
+      tracks:
+        - "GLORIA"
+        - "Hell"
+        - "Me & You"
+        - "你不是第一个离开的人"
+        - "不想回家"
+        - "受难曲"
+        - "冰河时代"
+        - "少年与海"
+        - "老人与海"
+        - "Find You"
+        - "离心力"
+        - "让世界暂停一分钟"
+        - "夜的尽头"
+        - "天空没有极限"
+
+  ost_singles:
+    - name: "后会无期"
+      source: "后会无期"
+      year: 2014
+    - name: "光年之外"
+      source: "太空旅客"
+      year: 2016
+    - name: "桃花诺"
+      source: "上古情歌"
+      year: 2017
+    - name: "心之焰"
+      source: "楚乔传"
+      year: 2017
+    - name: "穿越火线"
+      source: "穿越火线"
+      year: 2017
+    - name: "平行世界"
+      source: "刺杀小说家"
+      year: 2021
+    - name: "面壁者"
+      source: "三体"
+      year: 2022
+    - name: "无双的王者"
+      source: "王者荣耀"
+      year: 2021
+    - name: "万国觉醒"
+      source: "万国觉醒"
+      year: 2020
+    - name: "两个你"
+      source: "飞虎3壮志英雄"
+      year: 2021
+    - name: "画"
+      source: ""
+      year: 2016
+    - name: "喜欢你"
+      source: ""
+      year: 2014
+    - name: "红蔷薇白玫瑰"
+      source: ""
+      year: 2016
+    - name: "倒数"
+      source: ""
+      year: 2018
+    - name: "毒苹果"
+      source: ""
+      year: 2018
+    - name: "另一个童话"
+      source: ""
+      year: 2018
+    - name: "岩石里的花"
+      source: ""
+      year: 2018
+    - name: "睡皇后"
+      source: ""
+      year: 2018
+    - name: "平凡天使"
+      source: ""
+      year: 2020
+    - name: "孤独"
+      source: ""
+      year: 2020
+    - name: "超能力"
+      source: ""
+      year: 2021
+    - name: "倒流时间"
+      source: ""
+      year: 2021
+    - name: "A.I.N.Y. 2017"
+      source: ""
+      year: 2017
+    - name: "一路逆风"
+      source: ""
+      year: 2016
+
+  variety_show_singles:
+    - name: "存在"
+      source: "我是歌手"
+      year: 2014
+    - name: "你把我灌醉"
+      source: "我是歌手"
+      year: 2014
+    - name: "我要我们在一起"
+      source: "我是歌手"
+      year: 2014
+    - name: "If I Were a Boy"
+      source: "我是歌手"
+      year: 2014
+    - name: "喜欢你"
+      source: "我是歌手"
+      year: 2014
+    - name: "龙卷风"
+      source: "我是歌手"
+      year: 2014
+    - name: "Fallin'"
+      source: "我是歌手"
+      year: 2014
+    - name: "夜空中最亮的星"
+      source: "盖世英雄"
+      year: 2016
+    - name: "差不多姑娘"
+      source: "中国新说唱"
+      year: 2019
+
+  concerts:
+    - name: "18 Live 演唱会"
+      years: "2009"
+      aliases: ["18 Live"]
+      venues: ["香港九龙湾汇星Star Hall", "Toronto"]
+    - name: "Get Everybody Moving 世界巡回演唱会"
+      years: "2011-2012"
+      aliases: ["GEM演唱会", "Get Everybody Moving"]
+      venues: ["香港红馆", "Sydney", "广州", "澳门", "Vancouver", "Toronto"]
+    - name: "X.X.X. Live 世界巡回演唱会"
+      years: "2013-2015"
+      aliases: ["X.X.X. Live", "XXX Live"]
+      venues: ["香港红馆", "北京", "上海", "广州", "台北小巨蛋", "高雄巨蛋", "澳门", "新加坡", "吉隆坡", "Sydney", "Melbourne", "Auckland", "London Wembley", "San Jose", "Los Angeles", "New York", "Toronto"]
+    - name: "Queen of Hearts 世界巡回演唱会"
+      years: "2017-2019"
+      aliases: ["Queen of Hearts"]
+      venues: ["香港红馆", "北京", "上海", "广州", "深圳", "台北", "高雄巨蛋", "澳门", "新加坡", "吉隆坡", "Melbourne", "Sydney", "Perth", "Vancouver", "Toronto", "San Francisco"]
+    - name: "I AM GLORIA 世界巡回演唱会"
+      years: "2023-2026"
+      aliases: ["I AM GLORIA", "I AM GLORIA 2.0"]
+      venues: ["广州", "深圳", "上海", "北京鸟巢", "澳门Galaxy Arena", "香港启德体育园", "台北大巨蛋", "成都", "杭州", "南京", "武汉", "重庆", "长沙", "Paris", "London Wembley", "Kuala Lumpur", "Singapore", "Las Vegas", "San Francisco", "New York Barclays Center", "Toronto"]
+
+  variety_shows:
+    - name: "我是歌手"
+      network: "湖南卫视"
+    - name: "中国新说唱"
+      network: "爱奇艺"
+    - name: "中国好声音"
+      network: "浙江卫视"
+    - name: "明日之子"
+      network: "腾讯视频"
+    - name: "盖世英雄"
+      network: "江苏卫视"
+    - name: "极速前进"
+      network: "深圳卫视"
+    - name: "快乐大本营"
+      network: "湖南卫视"
+    - name: "天天向上"
+      network: "湖南卫视"
+    - name: "康熙来了"
+      network: "中天电视"
+    - name: "非常静距离"
+      network: "安徽卫视"
+    - name: "开讲啦"
+      network: "CCTV"
+    - name: "央视春晚"
+      network: "CCTV"
+    - name: "王牌对王牌"
+      network: "浙江卫视"
+    - name: "我想和你唱"
+      network: "湖南卫视"
+    - name: "锋味"
+      network: "浙江卫视"
+    - name: "极限挑战"
+      network: "东方卫视"
+    - name: "我们的歌"
+      network: "东方卫视"
+    - name: "我们的乐队"
+      network: "芒果TV"
+    - name: "青春有你"
+      network: "爱奇艺"
+    - name: "时光音乐会"
+      network: "湖南卫视"
+    - name: "金曲奖"
+      network: ""
+    - name: "江苏卫视跨年演唱会"
+      network: "江苏卫视"
+    - name: "Bilibili最美的夜"
+      network: "Bilibili"
+
+  collaborators:
+    - name: "林俊杰"
+      songs: ["手心的蔷薇"]
+    - name: "方大同"
+      songs: []
+    - name: "潘玮柏"
+      songs: []
+    - name: "艾热"
+      songs: []
+    - name: "Avril Lavigne"
+      songs: ["Trophy Boy"]
+    - name: "Ashley Tisdale"
+      songs: ["Trophy Boy"]
+    - name: "ILLENIUM"
+      songs: ["Still Breathing"]
+    - name: "Faouzia"
+      songs: ["Still Breathing"]
+    - name: "汪峰"
+      songs: []
+    - name: "张杰"
+      songs: []
+    - name: "李玟"
+      songs: []
+
+  venues:
+    - "红馆"
+    - "紅館"
+    - "红磡"
+    - "小巨蛋"
+    - "大巨蛋"
+    - "巨蛋"
+    - "鸟巢"
+    - "鳥巢"
+    - "体育馆"
+    - "體育館"
+    - "体育场"
+    - "體育場"
+    - "体育中心"
+    - "Galaxy Arena"
+    - "启德体育园"
+    - "啟德體育園"
+    - "Wembley"
+    - "Barclays Center"
+    - "Chase Center"
+    - "汇星"
+    - "Star Hall"
+
+  interview_channels:
+    - "娱乐星天地"
+    - "ETtoday"
+    - "TVBS"
+    - "凤凰网"
+    - "新浪娱乐"
+    - "腾讯娱乐"
+    - "搜狐娱乐"
+    - "网易娱乐"
+    - "GQ"
+    - "ELLE"
+    - "Vogue"
+    - "BAZAAR"
+    - "Marie Claire"
+    - "南方人物周刊"
+    - "三联生活周刊"
+    - "鲁豫有约"
+
+  notable_interviewers: []
+
+  western_artist_blacklist:
+    - "rick astley"
+    - "taylor swift"
+    - "ed sheeran"
+    - "adele"
+    - "beyonce"
+    - "beyoncé"
+    - "ariana grande"
+    - "billie eilish"
+    - "dua lipa"
+    - "lady gaga"
+    - "katy perry"
+    - "justin bieber"
+    - "bruno mars"
+    - "drake"
+    - "eminem"
+    - "rihanna"
+    - "shakira"
+    - "the weeknd"
+    - "post malone"
+    - "harry styles"
+    - "olivia rodrigo"
+    - "doja cat"
+    - "miley cyrus"
+    - "selena gomez"
+    - "charlie puth"
+    - "maroon 5"
+    - "coldplay"
+    - "imagine dragons"
+    - "one direction"
+    - "bts"
+    - "blackpink"
+    - "twice"
+    - "stray kids"
+    - "aespa"
+    - "newjeans"
+    - "ive"
+    - "nct"
+    - "exo"
+    - "red velvet"
+    - "tyler the creator"
+    - "frank ocean"
+    - "kanye west"
+    - "travis scott"
+    - "lana del rey"
+
+  other_chinese_artist_blacklist:
+    - "田馥甄"
+    - "林俊杰"
+    - "林俊傑"
+    - "张惠妹"
+    - "張惠妹"
+    - "蔡依林"
+    - "周杰伦"
+    - "周杰倫"
+    - "王力宏"
+    - "陶喆"
+    - "萧敬腾"
+    - "蕭敬騰"
+    - "李荣浩"
+    - "李榮浩"
+    - "华晨宇"
+    - "華晨宇"
+    - "薛之谦"
+    - "薛之謙"
+    - "毛不易"
+    - "周深"
+    - "张碧晨"
+    - "張碧晨"
+    - "李宇春"
+    - "张靓颖"
+    - "張靚穎"
+    - "黄丽玲"
+    - "黃麗玲"
+    - "A-Lin"
+    - "刘若英"
+    - "劉若英"
+    - "孙燕姿"
+    - "孫燕姿"
+    - "梁静茹"
+    - "梁靜茹"
+    - "王菲"
+    - "那英"
+    - "韩红"
+    - "韓紅"
+    - "谭维维"
+    - "譚維維"
+    - "汪峰"
+    - "李健"
+
+  wrong_context_patterns:
+    - "gemstone"
+    - "gem mining"
+    - "gem cutting"
+    - "jewelry gem"
+    - "precious gem"
+
+categories:
+  - id: 2
+    key: "personal_mv"
+    label: "個人MV"
+    sub: "Official MV & Lyric Video"
+    output_path: "MV/个人MV.md"
+    description: "按专辑分组，每首MV一行，含：歌名、链接、平台、发布日期、播放量、导演/频道、简介。"
+  - id: 3
+    key: "ost_singles"
+    label: "影視單曲"
+    sub: "OST & Singles"
+    output_path: "歌曲与合作/影视单曲.md"
+    description: "影视主题曲、官方数字单曲等非专辑收录作品。"
+  - id: 4
+    key: "concerts"
+    label: "演唱會"
+    sub: "Concert & Live"
+    output_path: "演唱会/演唱会.md"
+    description: "个人演唱会，区分官方影像、现场录像、精彩片段。"
+  - id: 5
+    key: "variety"
+    label: "綜藝節目"
+    sub: "TV Shows & Variety"
+    output_path: "节目与访谈/综艺节目.md"
+    description: "按节目分组：我是歌手（逐期）、中国新说唱、其他综艺、历史片段。每条注明原唱。"
+  - id: 6
+    key: "interviews"
+    label: "採訪訪談"
+    sub: "Interviews & Press"
+    output_path: "节目与访谈/采访访谈.md"
+    description: "专访、采访、金曲奖访谈等。"
+  - id: 8
+    key: "collabs"
+    label: "合唱合作"
+    sub: "Collabs & Features"
+    output_path: "歌曲与合作/合唱合作.md"
+    description: "与其他歌手的合唱、合作视频。"
+
+classification:
+  priority:
+    - "personal_mv"
+    - "ost_singles"
+    - "collabs"
+    - "concerts"
+    - "variety"
+    - "interviews"

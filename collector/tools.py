@@ -9,7 +9,6 @@ import time
 import json
 import logging
 from datetime import datetime
-from typing import Optional
 
 import httpx
 from googleapiclient.discovery import build
@@ -24,7 +23,6 @@ from config import (
     VERIFY_MAX_RETRIES,
     YOUTUBE_MAX_RESULTS,
     BILIBILI_PAGE_SIZE,
-    OUTPUT_SUBDIRS,
 )
 
 logger = logging.getLogger(__name__)
@@ -536,11 +534,10 @@ class DuplicateTracker:
 class FileWriter:
     """Writes Markdown files into the output directory."""
 
-    def __init__(self, output_dir: str = OUTPUT_DIR):
+    def __init__(self, output_dir: str = OUTPUT_DIR, subdirs: list[str] | None = None):
         self._output_dir = output_dir
-        # Pre-create all subdirectories
         os.makedirs(output_dir, exist_ok=True)
-        for sub in OUTPUT_SUBDIRS:
+        for sub in (subdirs or []):
             os.makedirs(os.path.join(output_dir, sub), exist_ok=True)
 
     def write(self, relative_path: str, content: str) -> str:

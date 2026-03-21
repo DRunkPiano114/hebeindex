@@ -1,0 +1,480 @@
+artist:
+  names:
+    primary: "陶喆"
+    english: "David Tao"
+    aliases: ["David Zee Tao", "陶吉吉", "DT"]
+  official_channels:
+    - "陶喆 David Tao"
+    - "David Tao - Topic"
+    - "陶喆 - 主題"
+    - "偉大文化 GREAT Entertainment"
+    - "環球音樂 Universal Music Taiwan"
+  labels: ["俠客唱片", "EMI", "偉大文化", "环球音乐"]
+  birth_year: 1969
+  genre: "R&B, Mandopop"
+  awards:
+    - "第9届金曲奖最佳新人奖（1998）"
+    - "第9届金曲奖最佳唱片制作人奖（1998）"
+    - "第11届金曲奖最佳唱片制作人奖（2000）"
+    - "第17届金曲奖最佳国语流行音乐演唱专辑奖（2006）"
+    - "第18届金曲奖最佳年度歌曲奖（2007）"
+    - "第21届金曲奖最佳国语男歌手奖（2010）"
+  social_links:
+    facebook: "https://www.facebook.com/DavidTaoOfficial"
+    instagram: "https://www.instagram.com/davidztao/"
+    youtube: "https://www.youtube.com/@陶喆DavidTao"
+
+discography:
+  solo_albums:
+    - name: "陶喆"
+      year: 1997
+      tracks:
+        - "飞机场的10:30"
+        - "爱，很简单"
+        - "沙滩"
+        - "十七岁"
+        - "望春风"
+        - "王八蛋"
+        - "是是非非"
+        - "流沙"
+        - "心乱飞"
+        - "再见以前先说再见"
+    - name: "I'm OK"
+      year: 1999
+      tracks:
+        - "找自己"
+        - "小镇姑娘"
+        - "夜来香"
+        - "普通朋友"
+        - "I'm OK"
+        - "不一样"
+        - "说走就走"
+        - "多谢你"
+        - "马戏团"
+        - "天天"
+        - "Angeline"
+    - name: "黑色柳丁"
+      year: 2002
+      tracks:
+        - "黑色柳丁"
+        - "今天晚间新闻"
+        - "Dear God"
+        - "Angel"
+        - "讨厌红楼梦"
+        - "蝴蝶"
+        - "宫保鸡丁"
+        - "Melody"
+        - "月亮代表谁的心"
+        - "二十二"
+        - "My Anata"
+        - "摇篮曲"
+        - "Katrina"
+    - name: "太平盛世"
+      year: 2005
+      tracks:
+        - "鬼"
+        - "Catherine"
+        - "就是爱你"
+        - "孙子兵法"
+        - "爱我还是他"
+        - "Susan说"
+        - "无缘"
+        - "Sula与Lampa的寓言"
+        - "2Night·藏爱"
+        - "她的歌"
+        - "爱是个什么东西"
+        - "祷告良辰歌"
+    - name: "太美丽"
+      year: 2006
+      tracks:
+        - "忘不了"
+        - "太美丽"
+        - "追"
+        - "那一瞬间"
+        - "Walk On"
+        - "自导自演的悲剧"
+        - "祝你幸福"
+        - "似曾相识"
+        - "今天你要嫁给我"
+        - "每一面都美"
+        - "不爱"
+        - "Olia"
+    - name: "69乐章"
+      year: 2009
+      tracks:
+        - "愿主怜悯"
+        - "乱七∞糟"
+        - "暗恋"
+        - "玩"
+        - "火鸟功"
+        - "雪豹"
+        - "关于陶喆"
+        - "我太傻"
+        - "请继续，任性"
+        - "中国姑娘"
+        - "谁的奥斯卡？"
+        - "应征爱"
+        - "你的歌"
+        - "桂冠英雄"
+    - name: "再见你好吗"
+      year: 2013
+      tracks:
+        - "Hello"
+        - "勿忘我"
+        - "一念之间"
+        - "逗阵兄弟(合唱版)"
+        - "真爱等一下"
+        - "好好说再见"
+        - "最爱唱的歌"
+        - "那个女孩"
+        - "The Promise"
+        - "因为爱"
+        - "小小的你"
+        - "All for Joy"
+        - "逗阵兄弟"
+    - name: "Stupid Pop Songs"
+      year: 2025
+      tracks:
+        - "Stupid Pop Song"
+        - "Moonchild"
+        - "星心"
+        - "一点点"
+        - "路上"
+        - "半晴天"
+        - "活该"
+        - "In The Morning"
+        - "微尘"
+        - "千言万语"
+        - "Lonely Is The Night"
+        - "陪你"
+        - "让爱再继续"
+        - "全世界会唱的歌"
+        - "Do I Do I (reprise)"
+
+  ost_singles:
+    - name: "I Believe"
+      source: "失落的帝国"
+      year: 2001
+    - name: "寂寞的季节"
+      source: ""
+      year: 2003
+    - name: "手牵手"
+      source: ""
+      year: 2003
+    - name: "好好活下去"
+      source: ""
+      year: 2008
+    - name: "爱是凝望又离开"
+      source: "不能说的夏天"
+      year: 2014
+    - name: "告别飞行"
+      source: "不能说的夏天"
+      year: 2014
+    - name: "万事如意"
+      source: ""
+      year: 2015
+    - name: "黑色星期二"
+      source: ""
+      year: 2017
+    - name: "Mars Baby"
+      source: ""
+      year: 2017
+    - name: "爱，很简单 (20周年初心版)"
+      source: ""
+      year: 2017
+    - name: "圣诞之吻"
+      source: ""
+      year: 2020
+    - name: "流沙 Reimagined"
+      source: ""
+      year: 2023
+    - name: "I'm OK (Reimagined)"
+      source: ""
+      year: 2023
+    - name: "小子"
+      source: ""
+      year: 2024
+
+  variety_show_singles:
+    - name: "勿忘我"
+      source: "全能星战"
+      year: 2013
+    - name: "黑色柳丁"
+      source: "我是歌手"
+      year: 2015
+    - name: "请到长城来滑雪"
+      source: "央视春晚"
+      year: 2015
+    - name: "蝴蝶"
+      source: "天赐的声音"
+      year: 2021
+    - name: "Forever Young"
+      source: "天赐的声音"
+      year: 2021
+    - name: "小镇姑娘"
+      source: "歌手2024"
+      year: 2024
+    - name: "思念"
+      source: "歌手2024"
+      year: 2024
+
+  concerts:
+    - name: "Soul Power 巡回演唱会"
+      years: "2003"
+      aliases: ["Soul Power"]
+      venues: ["香港红馆", "台北", "吉隆坡", "新加坡"]
+    - name: "LoveCan 就是爱你 世界巡回演唱会"
+      years: "2005-2006"
+      aliases: ["LoveCan", "就是爱你演唱会", "就是爱你音乐惊奇之旅"]
+      venues: ["上海", "北京", "香港"]
+    - name: "1.2.3我们都是木头人 世界巡回演唱会"
+      years: "2007-2008"
+      aliases: ["木头人演唱会"]
+      venues: ["上海", "台北", "北京"]
+    - name: "小人物狂想曲"
+      years: "2013-2014"
+      aliases: []
+      venues: ["台北"]
+    - name: "无二不乐"
+      years: "2016"
+      aliases: []
+      venues: []
+    - name: "I Love You Live 美加巡回演唱会"
+      years: "2018"
+      aliases: ["初心演唱会"]
+      venues: []
+    - name: "Soul Power II 世界巡回演唱会"
+      years: "2024-2026"
+      aliases: ["Soul Power II", "Soul Power 2", "Soul Power II Plus"]
+      venues: ["武汉", "厦门", "上海", "宁波", "台北小巨蛋", "广州", "香港红馆", "深圳", "杭州", "成都", "北京鸟巢", "吉隆坡", "悉尼", "墨尔本", "温哥华", "多伦多", "洛杉矶", "纽约", "巴黎", "伦敦", "新加坡", "重庆", "佛山"]
+
+  variety_shows:
+    - name: "全能星战"
+      network: "江苏卫视"
+    - name: "最美和声"
+      network: "北京卫视"
+    - name: "我是歌手"
+      network: "湖南卫视"
+    - name: "中国好歌曲"
+      network: "浙江卫视"
+    - name: "天赐的声音"
+      network: "浙江卫视"
+    - name: "歌手2024"
+      network: "湖南卫视"
+    - name: "央视春晚"
+      network: "CCTV"
+    - name: "吐槽大会"
+      network: "腾讯视频"
+    - name: "康熙来了"
+      network: "中天电视"
+    - name: "快乐大本营"
+      network: "湖南卫视"
+    - name: "天天向上"
+      network: "湖南卫视"
+    - name: "金曲奖"
+      network: ""
+    - name: "KKBOX风云榜"
+      network: ""
+    - name: "鲁豫有约"
+      network: ""
+    - name: "娱乐百分百"
+      network: "三立电视"
+
+  collaborators:
+    - name: "蔡依林"
+      songs: ["今天你要嫁给我"]
+    - name: "卢广仲"
+      songs: ["逗阵兄弟", "那个女孩"]
+    - name: "关诗敏"
+      songs: ["好好说再见", "All for Joy"]
+    - name: "蔡健雅"
+      songs: ["真爱等一下"]
+    - name: "王力宏"
+      songs: ["手牵手"]
+    - name: "袁娅维"
+      songs: ["Forever Young"]
+    - name: "鹿晗"
+      songs: ["请到长城来滑雪"]
+    - name: "胡彦斌"
+      songs: ["黑色柳丁"]
+
+  venues:
+    - "小巨蛋"
+    - "红馆"
+    - "紅館"
+    - "巨蛋"
+    - "体育馆"
+    - "體育館"
+    - "体育中心"
+    - "鸟巢"
+    - "鳥巢"
+    - "Legacy"
+    - "两厅院"
+    - "兩廳院"
+
+  interview_channels:
+    - "娱乐星天地"
+    - "ETtoday"
+    - "TVBS"
+    - "三立新闻"
+    - "东森新闻"
+    - "中时"
+    - "联合报"
+    - "自由时报"
+    - "苹果日报"
+    - "GQ"
+    - "ELLE"
+    - "Vogue"
+    - "BAZAAR"
+    - "Esquire"
+    - "聯合報"
+    - "自由時報"
+
+  notable_interviewers:
+    - "蔡康永"
+    - "小S"
+
+  western_artist_blacklist:
+    - "rick astley"
+    - "taylor swift"
+    - "ed sheeran"
+    - "adele"
+    - "beyonce"
+    - "beyoncé"
+    - "ariana grande"
+    - "billie eilish"
+    - "dua lipa"
+    - "lady gaga"
+    - "katy perry"
+    - "justin bieber"
+    - "bruno mars"
+    - "drake"
+    - "eminem"
+    - "rihanna"
+    - "shakira"
+    - "the weeknd"
+    - "post malone"
+    - "harry styles"
+    - "olivia rodrigo"
+    - "doja cat"
+    - "miley cyrus"
+    - "selena gomez"
+    - "charlie puth"
+    - "maroon 5"
+    - "coldplay"
+    - "imagine dragons"
+    - "one direction"
+    - "bts"
+    - "blackpink"
+    - "twice"
+    - "stray kids"
+    - "aespa"
+    - "newjeans"
+    - "ive"
+    - "nct"
+    - "exo"
+    - "red velvet"
+    - "tyler the creator"
+    - "frank ocean"
+    - "ofwgkta"
+    - "kanye west"
+    - "travis scott"
+    - "lana del rey"
+
+  other_chinese_artist_blacklist:
+    - "林俊杰"
+    - "林俊傑"
+    - "张惠妹"
+    - "張惠妹"
+    - "蔡依林"
+    - "周杰伦"
+    - "周杰倫"
+    - "王力宏"
+    - "田馥甄"
+    - "萧敬腾"
+    - "蕭敬騰"
+    - "李荣浩"
+    - "李榮浩"
+    - "邓紫棋"
+    - "鄧紫棋"
+    - "华晨宇"
+    - "華晨宇"
+    - "薛之谦"
+    - "薛之謙"
+    - "毛不易"
+    - "周深"
+    - "张碧晨"
+    - "張碧晨"
+    - "李宇春"
+    - "张靓颖"
+    - "張靚穎"
+    - "黄丽玲"
+    - "黃麗玲"
+    - "A-Lin"
+    - "刘若英"
+    - "劉若英"
+    - "孙燕姿"
+    - "孫燕姿"
+    - "梁静茹"
+    - "梁靜茹"
+    - "王菲"
+    - "那英"
+    - "韩红"
+    - "韓紅"
+    - "谭维维"
+    - "譚維維"
+    - "汪峰"
+    - "李健"
+
+  wrong_context_patterns:
+    - "陶瓷"
+    - "陶笛"
+    - "陶艺"
+    - "陶藝"
+
+categories:
+  - id: 2
+    key: "personal_mv"
+    label: "個人MV"
+    sub: "Official MV & Lyric Video"
+    output_path: "MV/个人MV.md"
+    description: "按专辑分组，每首MV一行，含：歌名、链接、平台、发布日期、播放量、导演/频道、简介。"
+  - id: 3
+    key: "ost_singles"
+    label: "影視單曲"
+    sub: "OST & Singles"
+    output_path: "歌曲与合作/影视单曲.md"
+    description: "影视主题曲、官方数字单曲等非专辑收录作品。"
+  - id: 4
+    key: "concerts"
+    label: "演唱會"
+    sub: "Concert & Live"
+    output_path: "演唱会/演唱会.md"
+    description: "个人演唱会，区分官方影像、现场录像、精彩片段。"
+  - id: 5
+    key: "variety"
+    label: "綜藝節目"
+    sub: "TV Shows & Variety"
+    output_path: "节目与访谈/综艺节目.md"
+    description: "按节目分组：歌手2024、全能星战、天赐的声音等。每条注明原唱。"
+  - id: 6
+    key: "interviews"
+    label: "採訪訪談"
+    sub: "Interviews & Press"
+    output_path: "节目与访谈/采访访谈.md"
+    description: "专访、采访、金曲奖访谈等。"
+  - id: 8
+    key: "collabs"
+    label: "合唱合作"
+    sub: "Collabs & Features"
+    output_path: "歌曲与合作/合唱合作.md"
+    description: "与其他歌手的合唱、合作视频。"
+
+classification:
+  priority:
+    - "personal_mv"
+    - "ost_singles"
+    - "collabs"
+    - "concerts"
+    - "variety"
+    - "interviews"
