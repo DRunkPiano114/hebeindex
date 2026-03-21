@@ -37,3 +37,4 @@ pnpm-debug.log*
 # Astro
 web/dist/
 web/.astro/
+.gstack/
