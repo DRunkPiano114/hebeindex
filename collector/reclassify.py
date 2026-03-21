@@ -50,7 +50,7 @@ CATEGORY_FILE_MAP = {
     "concerts": 4,
     "variety": 5,
     "interviews": 6,
-    "she_mv": 7,
+    "group_mv": 7,
     "collabs": 8,
 }
 
@@ -110,11 +110,12 @@ def richness_score(item: dict) -> int:
     return score
 
 
-def merge_and_dedup(file_ids: list[int]) -> list[dict]:
+def merge_and_dedup(file_ids: list[int], processed_dir: Path | None = None) -> list[dict]:
     """Read all processed files, merge, tag original_file_id, and cross-file dedup."""
+    processed_dir = processed_dir or PROCESSED_DIR
     all_items = []
     for fid in file_ids:
-        filepath = PROCESSED_DIR / f"file_{fid}.json"
+        filepath = processed_dir / f"file_{fid}.json"
         if not filepath.exists():
             logger.warning("File not found: %s", filepath)
             continue
@@ -153,18 +154,69 @@ def build_classifier(data: dict):
     return RuleClassifier(data)
 
 
+def filter_low_views(
+    classified: dict[str, list[dict]],
+    official_channels: set[str],
+    thresholds: dict[str, int] | None = None,
+) -> dict[str, list[dict]]:
+    """Move items with view counts below threshold to 'discard'.
+
+    - Items with view_count=0/None are kept (API didn't return data).
+    - Items from official channels are always exempt.
+    """
+    from config import MIN_VIEW_COUNT
+
+    thresholds = thresholds or MIN_VIEW_COUNT
+    default_threshold = thresholds.get("default", 1000)
+    filtered = defaultdict(list)
+    moved = 0
+
+    for category, items in classified.items():
+        if category == "discard":
+            filtered["discard"].extend(items)
+            continue
+
+        threshold = thresholds.get(category, default_threshold)
+        for item in items:
+            views = item.get("view_count") or item.get("play_count")
+            channel = item.get("channel") or item.get("author") or ""
+
+            # Keep: no view data, or from official channel
+            if not views or channel in official_channels:
+                filtered[category].append(item)
+                continue
+
+            if views < threshold:
+                item["classification_reason"] = "filtered_low_views"
+                item["category"] = "discard"
+                filtered["discard"].append(item)
+                moved += 1
+            else:
+                filtered[category].append(item)
+
+    if moved:
+        logger.info("View count filter: moved %d items to discard", moved)
+
+    return filtered
+
+
 class RuleClassifier:
     def __init__(self, data: dict):
         self.data = data
         artist = data["artist"]
-        group = data["group"]
+        group = data.get("group")
         disco = data["discography"]
 
-        # Hebe aliases for presence check
-        self.hebe_names = set(artist["names"]["aliases"] + [artist["names"]["primary"], artist["names"]["english"]])
-        # S.H.E aliases
-        self.she_names = set([group["name"]] + group.get("aliases", []))
-        self.she_member_names = set(group.get("member_names", []))
+        # Artist aliases for presence check
+        self.artist_names = set(artist["names"]["aliases"] + [artist["names"]["primary"], artist["names"]["english"]])
+        # Group aliases (optional — None for solo artists)
+        self.has_group = group is not None
+        if group:
+            self.group_names = set([group["name"]] + group.get("aliases", []))
+            self.group_member_names = set(group.get("member_names", []))
+        else:
+            self.group_names = set()
+            self.group_member_names = set()
 
         # Official channels
         self.official_channels = set(artist.get("official_channels", []))
@@ -185,7 +237,7 @@ class RuleClassifier:
 
         # Concerts
         self.concerts = disco.get("concerts", [])
-        self.she_concerts = disco.get("she_concerts", [])
+        self.group_concerts = disco.get("group_concerts", [])
         self._build_concert_patterns()
 
         # Variety shows
@@ -206,8 +258,8 @@ class RuleClassifier:
         self.collaborators = disco.get("collaborators", [])
         self._build_collab_patterns()
 
-        # S.H.E MVs
-        self.she_mvs = set(disco.get("she_mvs", []))
+        # Group MVs (e.g., S.H.E MVs)
+        self.group_mvs = set(disco.get("group_mvs", []))
 
         # Blacklists
         self.western_blacklist = [s.lower() for s in disco.get("western_artist_blacklist", [])]
@@ -246,7 +298,7 @@ class RuleClassifier:
             self.concert_names.append(c["name"])
             for alias in c.get("aliases", []):
                 self.concert_aliases.append(alias)
-        for c in self.she_concerts:
+        for c in self.group_concerts:
             self.concert_names.append(c["name"])
 
     def _build_collab_patterns(self):
@@ -269,15 +321,15 @@ class RuleClassifier:
     def _channel(self, item: dict) -> str:
         return item.get("channel") or item.get("author") or ""
 
-    def _has_hebe_name(self, text: str) -> bool:
-        for name in self.hebe_names:
+    def _has_artist_name(self, text: str) -> bool:
+        for name in self.artist_names:
             if name.lower() in text.lower():
                 return True
         return False
 
-    def _has_she_name(self, text: str) -> bool:
+    def _has_group_name(self, text: str) -> bool:
         t = text.lower()
-        for name in self.she_names:
+        for name in self.group_names:
             if name.lower() in t:
                 return True
         return False
@@ -326,6 +378,47 @@ class RuleClassifier:
             return None
         return None
 
+    def _detect_song_performance(self, item: dict) -> bool:
+        """Return True if this item is actually a song/concert performance,
+        not variety or interview content. Used by Rules 6 & 7 to let these
+        items fall through to Rule 5 (concerts) instead."""
+        title = self._title(item)
+        title_lower = self._title_lower(item)
+
+        # Guard: if a known variety show name is present, variety context wins
+        for show in self.variety_show_names:
+            if show in title:
+                return False
+
+        has_known_track = any(t in title for t in self.solo_tracks)
+        has_known_ost = any(t in title for t in self.ost_names)
+        has_known_group_track = any(t.lower() in title_lower for t in self.group_mvs)
+        has_track = has_known_track or has_known_ost or has_known_group_track
+
+        # Check 1: Known track + concert name → concert footage
+        has_concert = any(
+            c in title or c.lower() in title_lower
+            for c in self.concert_names + self.concert_aliases
+        )
+        if has_track and has_concert:
+            return True
+
+        # Check 2: Known track + live indicators, no interview framing
+        if has_track:
+            has_live = bool(re.search(r'live|現場|现场|演唱會|演唱会|concert', title_lower))
+            has_interview_frame = bool(re.search(
+                r'采访|採訪|专访|專訪|访谈|訪談|interview|幕后|幕後', title_lower))
+            if has_live and not has_interview_frame:
+                return True
+
+        # Check 3: Multiple track names → medley/concert compilation
+        track_count = sum(1 for t in self.solo_tracks if t in title)
+        track_count += sum(1 for t in self.ost_names if t in title)
+        if track_count >= 2:
+            return True
+
+        return False
+
     # ── Rule 0: Blacklist ──
     def _rule0_blacklist(self, item: dict) -> str | None:
         title = self._title(item)
@@ -338,20 +431,68 @@ class RuleClassifier:
                 return "rule0_wrong_context"
 
         # Western/Chinese artist blacklist: discard if title has blacklisted artist
-        # AND title does NOT contain any Hebe alias
-        has_hebe = self._has_hebe_name(title)
+        # AND title does NOT contain any of our artist's names
+        has_artist = self._has_artist_name(title)
 
         for artist in self.western_blacklist:
             if artist in title_lower or artist in channel:
-                if not has_hebe:
+                if not has_artist:
                     return "rule0_western_blacklist"
 
         for artist in self.chinese_blacklist:
             if artist in title or artist in self._channel(item):
-                if not has_hebe:
+                if not has_artist:
                     return "rule0_chinese_blacklist"
 
+        # Artist relevance gate: discard if no connection to artist at all
+        relevance = self._is_artist_irrelevant(item, title)
+        if relevance:
+            return relevance
+
         return None
+
+    def _is_artist_irrelevant(self, item: dict, title: str) -> str | None:
+        """Check if the video has no connection to the target artist."""
+        channel = self._channel(item)
+
+        # Exempt: official channels are always relevant
+        if channel in self.official_channels:
+            return None
+
+        # Exempt: title contains artist name
+        if self._has_artist_name(title):
+            return None
+
+        # Exempt: title contains group name
+        if self._has_group_name(title):
+            return None
+
+        # Exempt: title contains known content (track, concert, OST, variety show, collab song)
+        for track in self.solo_tracks:
+            if track in title:
+                return None
+        for name in self.concert_names + self.concert_aliases:
+            if name in title or name.lower() in title.lower():
+                return None
+        for name in self.ost_names:
+            if name in title:
+                return None
+        for name in self.variety_show_names:
+            if name in title:
+                return None
+        for track in self.group_mvs:
+            if track.lower() in title.lower():
+                return None
+        for collab_name, songs in self.collab_name_songs.items():
+            for song in songs:
+                if song in title:
+                    return None
+        for venue in self.venues:
+            if venue in title:
+                return None
+
+        # No connection to artist found
+        return "rule0_artist_not_primary"
 
     # ── Rule 1: Personal MV ──
     def _rule1_personal_mv(self, item: dict) -> str | None:
@@ -360,7 +501,7 @@ class RuleClassifier:
         channel = self._channel(item)
 
         # Exclude if S.H.E related
-        if self._has_she_name(title) and not self._has_hebe_name(title):
+        if self._has_group_name(title) and not self._has_artist_name(title):
             return None
         # Official channel + Official MV marker
         is_official_channel = channel in self.official_channels
@@ -368,7 +509,7 @@ class RuleClassifier:
 
         if is_official_channel and has_mv_marker:
             # Check it's not S.H.E
-            if not self._has_she_name(title):
+            if not self._has_group_name(title):
                 return "rule1_official_mv"
 
         # Known solo track + MV keyword, no live indicator
@@ -376,7 +517,7 @@ class RuleClassifier:
             for track in self.solo_tracks:
                 if track in title:
                     if re.search(r'mv|music\s*video', title_lower):
-                        if not self._has_she_name(title):
+                        if not self._has_group_name(title):
                             # Check it's not also an OST with movie name present
                             is_ost_context = False
                             for ost_name, ost_source in self.ost_with_source:
@@ -390,8 +531,8 @@ class RuleClassifier:
         # Catches lyric videos, KTV, audio uploads, fan edits
         if not self._has_live_indicator(title) and not self._has_other_category_indicator(title):
             for track in self.solo_tracks:
-                if track in title and self._has_hebe_name(title):
-                    if not self._has_she_name(title):
+                if track in title and self._has_artist_name(title):
+                    if not self._has_group_name(title):
                         # Exclude if OST context
                         is_ost_context = False
                         for ost_name, ost_source in self.ost_with_source:
@@ -403,12 +544,15 @@ class RuleClassifier:
 
         return None
 
-    # ── Rule 2: S.H.E MV ──
+    # ── Rule 2: Group MV (e.g., S.H.E) ──
     def _rule2_she_mv(self, item: dict) -> str | None:
+        if not self.has_group:
+            return None
+
         title = self._title(item)
         title_lower = self._title_lower(item)
 
-        has_she = self._has_she_name(title)
+        has_she = self._has_group_name(title)
         has_mv = bool(re.search(r'mv|music\s*video', title_lower))
 
         if has_she and has_mv and not self._has_live_indicator(title):
@@ -416,7 +560,7 @@ class RuleClassifier:
 
         # Known S.H.E MV track + MV marker
         if not self._has_live_indicator(title):
-            for track in self.she_mvs:
+            for track in self.group_mvs:
                 if track.lower() in title_lower:
                     if has_mv:
                         return "rule2_she_known_track_mv"
@@ -424,7 +568,7 @@ class RuleClassifier:
         # Broader: Known S.H.E track + S.H.E name (no MV keyword needed)
         if not self._has_live_indicator(title) and not self._has_other_category_indicator(title):
             if has_she:
-                for track in self.she_mvs:
+                for track in self.group_mvs:
                     if track.lower() in title_lower:
                         return "rule2_she_known_track_broad"
 
@@ -461,7 +605,7 @@ class RuleClassifier:
         # Broader: Known OST name + Hebe name, no live indicator, not a solo album track
         if not self._has_live_indicator(title):
             for ost in self.ost_singles:
-                if ost["name"] in title and self._has_hebe_name(title):
+                if ost["name"] in title and self._has_artist_name(title):
                     # Only if it's NOT also a solo album track (avoid stealing from rule 1)
                     if ost["name"] not in self.solo_tracks:
                         return "rule3_ost_broad"
@@ -481,7 +625,7 @@ class RuleClassifier:
                         return "rule4_collab_known_song"
                 # Collaborator + feat/ft/合唱 pattern
                 if re.search(r'feat|ft\.?|×|合唱|合作|duet|collaboration|&', title_lower):
-                    if self._has_hebe_name(title):
+                    if self._has_artist_name(title):
                         return "rule4_collab_pattern"
 
         return None
@@ -498,7 +642,7 @@ class RuleClassifier:
                 return "rule5_known_concert"
 
         # S.H.E concert names
-        for c in self.she_concerts:
+        for c in self.group_concerts:
             name = c["name"]
             # Match partial (e.g., "奇幻乐园" from "SHE 奇幻乐园演唱会")
             short_name = name.replace("SHE ", "").replace("S.H.E ", "")
@@ -507,14 +651,14 @@ class RuleClassifier:
 
         # 演唱会/Concert + Hebe/S.H.E name
         if re.search(r'演唱会|演唱會|concert', title_lower):
-            if self._has_hebe_name(title) or self._has_she_name(title):
+            if self._has_artist_name(title) or self._has_group_name(title):
                 return "rule5_concert_keyword"
 
         # Long duration (>30min) + Live/现场 + Hebe name (not variety show)
         dur = self._duration_seconds(item)
         if dur and dur > 1800:
             if re.search(r'live|现场|現場|全场|全場', title_lower):
-                if self._has_hebe_name(title):
+                if self._has_artist_name(title):
                     # Exclude if it matches a known variety show
                     is_variety = any(v in title for v in self.variety_show_names)
                     if not is_variety:
@@ -523,7 +667,7 @@ class RuleClassifier:
         # Known venue + Hebe name
         for venue in self.venues:
             if venue in title:
-                if self._has_hebe_name(title) or self._has_she_name(title):
+                if self._has_artist_name(title) or self._has_group_name(title):
                     if re.search(r'live|现场|現場|演出|演唱', title_lower):
                         return "rule5_venue"
 
@@ -531,6 +675,10 @@ class RuleClassifier:
 
     # ── Rule 6: Variety shows ──
     def _rule6_variety(self, item: dict) -> str | None:
+        # Concert footage misclassified as variety → let Rule 5 handle it
+        if self._detect_song_performance(item):
+            return None
+
         title = self._title(item)
         title_lower = self._title_lower(item)
         channel = self._channel(item)
@@ -547,23 +695,27 @@ class RuleClassifier:
         # Known TV network channel
         for net in self.variety_networks:
             if net in channel or net in title:
-                if self._has_hebe_name(title) or self._has_she_name(title):
+                if self._has_artist_name(title) or self._has_group_name(title):
                     return "rule6_tv_network"
 
         # Award shows / galas
         if re.search(r'颁奖|頒獎|晚会|晚會|典礼|典禮|盛典|跨年', title_lower):
-            if self._has_hebe_name(title) or self._has_she_name(title):
+            if self._has_artist_name(title) or self._has_group_name(title):
                 return "rule6_award_gala"
 
         # Episode pattern
         if re.search(r'第\d+期|EP\d+|ep\d+', title):
-            if self._has_hebe_name(title) or self._has_she_name(title):
+            if self._has_artist_name(title) or self._has_group_name(title):
                 return "rule6_episode_pattern"
 
         return None
 
     # ── Rule 7: Interviews ──
     def _rule7_interviews(self, item: dict) -> str | None:
+        # Concert footage misclassified as interview → let Rule 5 handle it
+        if self._detect_song_performance(item):
+            return None
+
         title = self._title(item)
         title_lower = self._title_lower(item)
         channel = self._channel(item)
@@ -578,13 +730,13 @@ class RuleClassifier:
 
         # News / report
         if re.search(r'新闻|新聞|报道|報導|独家|獨家', title_lower):
-            if self._has_hebe_name(title):
+            if self._has_artist_name(title):
                 return "rule7_news"
 
         # Known interview media channel
         for media in self.interview_channels:
             if media in channel:
-                if self._has_hebe_name(title) or self._has_she_name(title):
+                if self._has_artist_name(title) or self._has_group_name(title):
                     return "rule7_media_channel"
 
         return None
@@ -604,10 +756,10 @@ class RuleClassifier:
         if reason:
             return "personal_mv", reason
 
-        # Rule 2: S.H.E MV
+        # Rule 2: Group MV
         reason = self._rule2_she_mv(item)
         if reason:
-            return "she_mv", reason
+            return "group_mv", reason
 
         # Rule 3: OST / Singles
         reason = self._rule3_ost_singles(item)
@@ -644,7 +796,7 @@ class RuleClassifier:
 # Expected duration ranges per category (seconds): (min, ideal_min, ideal_max, max)
 DURATION_RANGES: dict[str, tuple[int, int, int, int]] = {
     "personal_mv": (120, 180, 360, 480),
-    "she_mv": (120, 180, 360, 480),
+    "group_mv": (120, 180, 360, 480),
     "ost_singles": (120, 180, 360, 480),
     "collabs": (120, 180, 420, 600),
     "concerts": (300, 1800, 7200, 14400),
@@ -667,6 +819,7 @@ STRONG_RULE_REASONS = {
     "rule0_wrong_context",
     "rule0_western_blacklist",
     "rule0_chinese_blacklist",
+    "rule0_artist_not_primary",
 }
 
 # Medium rule reasons — decent match but less certain
@@ -804,8 +957,8 @@ class ConfidenceScorer:
                 return ("title_match", 0.6)
             return ("title_match", 0.3)
 
-        if category == "she_mv":
-            has_she = self.classifier._has_she_name(item.get("title", ""))
+        if category == "group_mv":
+            has_she = self.classifier._has_group_name(item.get("title", ""))
             has_mv = bool(re.search(r'\bmv\b|music\s*video', title))
             if has_she and has_mv:
                 return ("title_match", 1.0)
@@ -905,7 +1058,7 @@ class ConfidenceScorer:
 LLM_SYSTEM_PROMPT = """你是一个视频分类助手。请将以下田馥甄（Hebe Tien）相关的视频分类到以下类别之一：
 
 - personal_mv: 田馥甄个人MV（官方音乐录影带，非现场版）
-- she_mv: S.H.E 团体MV
+- group_mv: S.H.E 团体MV
 - ost_singles: 影视单曲、OST、数字单曲（非专辑收录的独立发行曲目）
 - collabs: 合唱合作（与其他歌手的合唱、feat、合作视频）
 - concerts: 演唱会（个人或S.H.E演唱会完整场/片段/花絮）
@@ -923,10 +1076,37 @@ LLM_SYSTEM_PROMPT = """你是一个视频分类助手。请将以下田馥甄（
 4. 如果无法确定，请归入最可能的类别"""
 
 
+def build_llm_prompt(profile) -> str:
+    """Generate LLM classification prompt from artist profile."""
+    primary = profile.artist.names.primary
+    english = profile.artist.names.english
+    categories = profile.categories
+    cat_lines = []
+    for cat in categories:
+        cat_lines.append(f"- {cat.key}: {cat.description or cat.label}")
+    cat_lines.append(f"- discard: 与{primary}无关的内容")
+    cat_block = "\n".join(cat_lines)
+
+    return f"""你是一个视频分类助手。请将以下{primary}（{english}）相关的视频分类到以下类别之一：
+
+{cat_block}
+
+请严格按照JSON格式输出，每条一个JSON对象，用JSON array包裹：
+[{{"index": 0, "category": "category_key", "reason": "简短理由"}}]
+
+注意：
+1. 演唱会片段即使很短，只要能确认来自某场演唱会，仍归concerts
+2. 综艺节目中的表演片段归variety，除非是纯采访内容
+3. MV必须是音乐录影带，不是现场演唱
+4. 如果无法确定，请归入最可能的类别"""
+
+
 def llm_classify_parallel(
     unclassified_items: list[tuple[int, dict]],
     max_workers: int = 4,
     batch_size: int = 20,
+    system_prompt: str | None = None,
+    valid_categories: list[str] | None = None,
 ) -> list[tuple[int, dict, str, str]]:
     """Classify unclassified items via LLM in parallel batches.
     Returns list of (original_index, item, category, reason).
@@ -934,7 +1114,8 @@ def llm_classify_parallel(
     from concurrent.futures import ThreadPoolExecutor, as_completed
     from claude_llm import classify_batch
 
-    valid_categories = list(CATEGORY_FILE_MAP.keys())
+    prompt = system_prompt or LLM_SYSTEM_PROMPT
+    valid_categories = valid_categories or list(CATEGORY_FILE_MAP.keys())
 
     # Split into batches
     batches: list[list[tuple[int, dict]]] = []
@@ -955,7 +1136,7 @@ def llm_classify_parallel(
                 items=batch_items,
                 categories=valid_categories,
                 artist_name="",
-                system_prompt=LLM_SYSTEM_PROMPT,
+                system_prompt=prompt,
             )
             results_map = {}
             for r in raw:
@@ -1006,15 +1187,23 @@ FILE_METADATA = {
 }
 
 
-def write_output(classified: dict[str, list[dict]], output_dir: Path):
+def write_output(
+    classified: dict[str, list[dict]],
+    output_dir: Path,
+    category_file_map: dict[str, int] | None = None,
+    file_metadata: dict[int, dict] | None = None,
+):
     """Write classified items back to processed JSON files."""
     from datetime import datetime
 
+    category_file_map = category_file_map or CATEGORY_FILE_MAP
+    file_metadata = file_metadata or FILE_METADATA
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    for category_key, file_id in CATEGORY_FILE_MAP.items():
+    for category_key, file_id in category_file_map.items():
         items = classified.get(category_key, [])
-        meta = FILE_METADATA[file_id]
+        meta = file_metadata.get(file_id, {"output_path": "", "title": category_key, "description": ""})
 
         # Strip internal classification fields from results for frontend compat
         clean_results = []
@@ -1052,8 +1241,10 @@ def write_output(classified: dict[str, list[dict]], output_dir: Path):
 # Reporting
 # ──────────────────────────────────────────────────────────────────────
 
-def print_report(classified: dict[str, list[dict]]):
+def print_report(classified: dict[str, list[dict]], category_file_map: dict[str, int] | None = None):
     """Print classification statistics and migration matrix."""
+    category_file_map = category_file_map or CATEGORY_FILE_MAP
+
     print("\n" + "=" * 60)
     print("CLASSIFICATION REPORT")
     print("=" * 60)
@@ -1061,10 +1252,10 @@ def print_report(classified: dict[str, list[dict]]):
     # Category counts
     print("\nCategory Distribution:")
     total = 0
-    for cat in list(CATEGORY_FILE_MAP.keys()) + ["discard", "unclassified"]:
+    for cat in list(category_file_map.keys()) + ["discard", "unclassified"]:
         count = len(classified.get(cat, []))
         total += count
-        file_id = CATEGORY_FILE_MAP.get(cat, "-")
+        file_id = category_file_map.get(cat, "-")
         print(f"  {cat:20s} (file_{file_id}): {count:5d}")
     print(f"  {'TOTAL':20s}        : {total:5d}")
 
@@ -1107,7 +1298,7 @@ def print_report(classified: dict[str, list[dict]]):
             orig = item.get("original_file_id", "?")
             matrix[orig][cat] += 1
 
-    cats = list(CATEGORY_FILE_MAP.keys()) + ["discard", "unclassified"]
+    cats = list(category_file_map.keys()) + ["discard", "unclassified"]
     header = f"  {'orig':>6s} | " + " | ".join(f"{c[:8]:>8s}" for c in cats)
     print(header)
     print("  " + "-" * len(header))
@@ -1124,7 +1315,11 @@ def print_report(classified: dict[str, list[dict]]):
 # ──────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="Reclassify HebeIndex video data")
+    from artist_profile import load_profile
+
+    parser = argparse.ArgumentParser(description="Reclassify video data")
+    parser.add_argument("--artist", type=str, default=None,
+                        help="Path to artist YAML (default: auto-detect)")
     parser.add_argument("--no-llm", action="store_true", help="Skip LLM fallback, mark unclassified")
     parser.add_argument("--dry-run", action="store_true", help="Print stats only, don't write files")
     parser.add_argument("--output-dir", type=str, default=None,
@@ -1135,21 +1330,37 @@ def main():
                         help="Parallel LLM workers (default: 12)")
     args = parser.parse_args()
 
+    # Load artist profile
+    profile = load_profile(args.artist)
+    artist_data = profile.model_dump()
+    slug = profile.slug()
+    processed_dir = BASE_DIR / "data" / slug / "processed"
+    logger.info("Artist: %s (%s), data: %s", profile.artist.names.primary, slug, processed_dir)
+
     if args.apply:
-        output_dir = PROCESSED_DIR
+        output_dir = processed_dir
     elif args.output_dir:
         output_dir = BASE_DIR / args.output_dir
     else:
         output_dir = BASE_DIR / "reclassified"
 
+    # Build category map from profile
+    category_file_map = profile.category_file_map()
+    file_metadata = {}
+    for cat in profile.categories:
+        file_metadata[cat.id] = {
+            "output_path": cat.output_path,
+            "title": cat.label,
+            "description": cat.description,
+        }
+
     # Load reference data
-    artist_data = load_artist_data()
     classifier = RuleClassifier(artist_data)
     scorer = ConfidenceScorer(classifier)
 
     # Step 1: Merge & dedup
-    file_ids = list(range(2, 9))
-    all_items = merge_and_dedup(file_ids)
+    file_ids = profile.file_ids()
+    all_items = merge_and_dedup(file_ids, processed_dir)
 
     # Step 2: Rule-based classification + confidence scoring
     classified: dict[str, list[dict]] = defaultdict(list)
@@ -1170,9 +1381,16 @@ def main():
     rule_classified = sum(len(v) for v in classified.values())
     logger.info("Rule-based: %d classified, %d unclassified", rule_classified, len(unclassified_items))
 
+    # Step 2.5: Filter low-view items
+    classified = filter_low_views(classified, classifier.official_channels)
+
     # Step 3: LLM fallback (parallel) + confidence scoring
     if unclassified_items and not args.no_llm:
-        results = llm_classify_parallel(unclassified_items, max_workers=args.workers)
+        llm_prompt = build_llm_prompt(profile)
+        results = llm_classify_parallel(
+            unclassified_items, max_workers=args.workers,
+            system_prompt=llm_prompt, valid_categories=list(category_file_map.keys()),
+        )
         for _, item, cat, reason in results:
             item["category"] = cat
             item["classification_reason"] = reason
@@ -1189,11 +1407,11 @@ def main():
             classified["unclassified"].append(item)
 
     # Report
-    print_report(classified)
+    print_report(classified, category_file_map)
 
     # Step 4: Write output
     if not args.dry_run:
-        write_output(classified, output_dir)
+        write_output(classified, output_dir, category_file_map, file_metadata)
         logger.info("Done! Output written to %s", output_dir)
     else:
         logger.info("Dry run — no files written")

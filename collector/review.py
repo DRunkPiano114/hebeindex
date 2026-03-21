@@ -41,7 +41,7 @@ CATEGORY_FILE_MAP = {
     "concerts": 4,
     "variety": 5,
     "interviews": 6,
-    "she_mv": 7,
+    "group_mv": 7,
     "collabs": 8,
 }
 
@@ -51,7 +51,7 @@ CATEGORY_LABELS = {
     "concerts": "Concerts",
     "variety": "Variety Shows",
     "interviews": "Interviews",
-    "she_mv": "S.H.E MV",
+    "group_mv": "S.H.E MV",
     "collabs": "Collaborations",
 }
 

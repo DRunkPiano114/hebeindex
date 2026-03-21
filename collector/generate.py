@@ -106,15 +106,37 @@ def step_pipeline(artist_path: Path, phase: int | None, no_llm: bool, verbose: b
             phase3_format(profile, search_plan, use_llm=not no_llm)
         return
 
-    # Full run: phases 1-2 then 3
+    # Full run: phases 1-2, reclassify, then 3
     _step(f"Step 2: Pipeline Phase 1 — Search ({name})")
     phase1_search(profile, search_plan)
 
     _step(f"Step 2: Pipeline Phase 2 — Dedup + Verify ({name})")
     phase2_process(profile, search_plan)
 
+    _step(f"Step 2.5: Reclassify + Quality Filter ({name})")
+    step_reclassify(artist_path, no_llm)
+
     _step(f"Step 3: Pipeline Phase 3 — Format ({name})")
     phase3_format(profile, search_plan, use_llm=not no_llm)
+
+
+def step_reclassify(artist_path: Path, no_llm: bool) -> None:
+    """Run reclassify to apply quality filters and content-based classification."""
+    cmd = [
+        sys.executable, str(BASE_DIR / "reclassify.py"),
+        "--apply",
+        "--artist", str(artist_path),
+    ]
+    if no_llm:
+        cmd.append("--no-llm")
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    print(result.stdout)
+    if result.returncode != 0:
+        print(result.stderr, file=sys.stderr)
+        _fail("Reclassify failed")
+
+    print("Reclassification complete.")
 
 
 def step_web_build() -> None:

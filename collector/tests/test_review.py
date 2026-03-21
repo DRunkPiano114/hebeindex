@@ -392,7 +392,7 @@ class TestDurationRanges:
             assert lo <= ideal_lo <= ideal_hi <= hi, f"Bad range for {cat}: {lo}, {ideal_lo}, {ideal_hi}, {hi}"
 
     def test_all_main_categories_have_ranges(self):
-        expected = {"personal_mv", "she_mv", "ost_singles", "collabs", "concerts", "variety", "interviews"}
+        expected = {"personal_mv", "group_mv", "ost_singles", "collabs", "concerts", "variety", "interviews"}
         assert expected == set(DURATION_RANGES.keys())
 
 
