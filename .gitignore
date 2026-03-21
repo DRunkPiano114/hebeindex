@@ -38,3 +38,5 @@ pnpm-debug.log*
 web/dist/
 web/.astro/
 .gstack/
+
+data/

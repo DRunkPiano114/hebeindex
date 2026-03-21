@@ -140,6 +140,31 @@ def _stream_claude(cmd: list[str], timeout: int) -> str:
     return result_text
 
 
+def _extract_text_from_list(data: list) -> str:
+    """Extract text content from a list of message objects or content blocks."""
+    texts = []
+    for item in data:
+        if isinstance(item, str):
+            texts.append(item)
+        elif isinstance(item, dict):
+            # Message with content blocks
+            if "content" in item:
+                content = item["content"]
+                if isinstance(content, str):
+                    texts.append(content)
+                elif isinstance(content, list):
+                    for block in content:
+                        if isinstance(block, dict) and block.get("type") == "text":
+                            texts.append(block.get("text", ""))
+            # Direct content block
+            elif item.get("type") == "text":
+                texts.append(item.get("text", ""))
+            # Object with result field
+            elif "result" in item:
+                texts.append(str(item["result"]))
+    return "\n".join(texts) if texts else json.dumps(data)
+
+
 def claude_call(
     prompt: str,
     system_prompt: str = "",
@@ -203,10 +228,19 @@ def claude_call(
 
     try:
         data = json.loads(result.stdout)
-        usage = data.get("usage", {})
-        input_tokens = usage.get("input_tokens", "?")
-        output_tokens = usage.get("output_tokens", "?")
-        result_text = data.get("result", result.stdout)
+        if isinstance(data, dict):
+            usage = data.get("usage", {})
+            input_tokens = usage.get("input_tokens", "?")
+            output_tokens = usage.get("output_tokens", "?")
+            result_text = data.get("result", result.stdout)
+        elif isinstance(data, list):
+            result_text = _extract_text_from_list(data)
+            input_tokens = "?"
+            output_tokens = "?"
+        else:
+            result_text = str(data)
+            input_tokens = "?"
+            output_tokens = "?"
         logger.info("claude ✓ %.1fs, tokens: %s→%s, result=%d chars",
                     elapsed, input_tokens, output_tokens, len(result_text))
         return result_text

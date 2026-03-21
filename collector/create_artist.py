@@ -186,6 +186,7 @@ def _validate_and_fix(
 ) -> str:
     """Parse, validate, and iteratively fix quality issues in generated YAML."""
     best_content = yaml_content
+    last_valid_content = yaml_content
 
     for iteration in range(max_iterations + 1):  # iteration 0 = initial check
         # Parse and validate
@@ -198,14 +199,15 @@ def _validate_and_fix(
 
             profile = load_profile(tmp_path)
             Path(tmp_path).unlink(missing_ok=True)
+            last_valid_content = best_content
         except Exception as e:
             if iteration == 0:
                 print(f"Warning: Initial validation failed: {e}")
                 print("The YAML will still be saved — please review and fix manually.")
                 return best_content
-            # Fix iteration produced invalid YAML — return previous version
+            # Fix iteration produced invalid YAML — return previous valid version
             print(f"  Fix iteration {iteration} produced invalid YAML, keeping previous version.")
-            return best_content
+            return last_valid_content
 
         # Print stats
         prefix = "  " if iteration > 0 else ""
@@ -334,8 +336,8 @@ def main():
                         help="Show claude CLI progress in real time")
     parser.add_argument("--live", action="store_true",
                         help="Open interactive Claude Code session (watch Claude work)")
-    parser.add_argument("--timeout", type=int, default=600,
-                        help="Timeout in seconds per Claude call (default: 600)")
+    parser.add_argument("--timeout", type=int, default=1800,
+                        help="Timeout in seconds per Claude call (default: 1800)")
     parser.add_argument("--max-fix", type=int, default=2,
                         help="Max auto-fix iterations (default: 2, set 0 to disable)")
     args = parser.parse_args()
