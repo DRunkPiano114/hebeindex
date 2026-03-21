@@ -4,9 +4,10 @@ import { strings } from '../i18n/strings'
 
 interface Props {
   title?: string
+  hasSidebar?: boolean
 }
 
-const { title = strings.defaultTitle } = Astro.props
+const { title = strings.siteName, hasSidebar = true } = Astro.props
 ---
 
 <!doctype html>
@@ -19,7 +20,7 @@ const { title = strings.defaultTitle } = Astro.props
     <script defer src="https://cloud.umami.is/script.js" data-website-id="044f05db-dd01-432a-ad61-13833e25a4c2"></script>
   </head>
   <body>
-    <div class="app-layout">
+    <div class:list={['app-layout', { 'has-sidebar': hasSidebar }]}>
       <slot name="sidebar" />
       <div class="app-main">
         <slot />
@@ -31,11 +32,15 @@ const { title = strings.defaultTitle } = Astro.props
 <style>
   .app-layout {
     display: grid;
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: 1fr;
     height: 100vh;
     max-width: 1200px;
     margin: 0 auto;
     overflow: hidden;
+  }
+
+  .app-layout.has-sidebar {
+    grid-template-columns: 220px 1fr;
   }
 
   .app-main {
@@ -46,9 +51,8 @@ const { title = strings.defaultTitle } = Astro.props
     overflow: hidden;
   }
 
-
   @media (max-width: 768px) {
-    .app-layout {
+    .app-layout.has-sidebar {
       grid-template-columns: 1fr;
     }
 

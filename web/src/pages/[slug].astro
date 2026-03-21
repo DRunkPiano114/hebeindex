@@ -1,0 +1,156 @@
+---
+import Layout from '../components/Layout.astro'
+import Sidebar from '../components/Sidebar.astro'
+import ContentTable from '../components/ContentTable'
+import { loadAllArtists, loadCategory } from '../data/loader'
+
+export function getStaticPaths() {
+  const artists = loadAllArtists()
+  return artists.map(artist => ({
+    params: { slug: artist.slug },
+    props: { artist },
+  }))
+}
+
+const { artist } = Astro.props
+
+const data = artist.categories.map((cat: { key: string; label: string; sub: string; id: number }) => ({
+  key: cat.key,
+  label: cat.label,
+  sub: cat.sub,
+  search: `搜尋${cat.label}...`,
+  items: loadCategory(artist.slug, cat.id),
+}))
+
+const total = data.reduce((sum: number, c: { items: any[] }) => sum + c.items.length, 0)
+
+const navItems = data.map((c: { key: string; label: string; sub: string; items: any[] }) => ({
+  key: c.key,
+  label: c.label,
+  sub: c.sub,
+  count: c.items.length,
+}))
+---
+
+<Layout title={`${artist.names.primary}影音誌 · ${artist.names.english} Archive`}>
+  <Sidebar
+    slot="sidebar"
+    items={navItems}
+    total={total}
+    artistName={artist.names.primary}
+    artistEnglish={artist.names.english}
+  />
+
+  {data.map((cat: any, i: number) => (
+    <div
+      class:list={['category-panel', { active: i === 0 }]}
+      id={`panel-${cat.key}`}
+      data-category={cat.key}
+    >
+      <section style="padding: 24px 0 16px; flex-shrink: 0;">
+        <h2 class="font-display" style="font-size: 28px; font-weight: 400; margin-bottom: 4px;">
+          {cat.label}
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 13px; letter-spacing: 0.03em;">
+          {cat.sub}
+        </p>
+      </section>
+
+      {i === 0 ? (
+        <ContentTable client:load items={cat.items} searchPlaceholder={cat.search} />
+      ) : (
+        <ContentTable client:idle items={cat.items} searchPlaceholder={cat.search} />
+      )}
+    </div>
+  ))}
+</Layout>
+
+<script>
+  function switchCategory(key: string, pushState = true) {
+    document.querySelectorAll('.category-panel').forEach(el => {
+      const panel = el as HTMLElement
+      if (panel.dataset.category === key) {
+        panel.classList.add('active')
+      } else {
+        panel.classList.remove('active')
+      }
+    })
+
+    document.querySelectorAll('.sidebar-item').forEach(el => {
+      const link = el as HTMLElement
+      if (link.dataset.key === key) {
+        link.classList.add('active')
+      } else {
+        link.classList.remove('active')
+      }
+    })
+
+    document.querySelectorAll('.mobile-tab').forEach(el => {
+      const tab = el as HTMLElement
+      if (tab.dataset.key === key) {
+        tab.classList.add('active')
+      } else {
+        tab.classList.remove('active')
+      }
+    })
+
+    if (pushState) {
+      history.pushState(null, '', `#${key}`)
+    }
+  }
+
+  function getKeyFromHash(): string | null {
+    const hash = window.location.hash.slice(1)
+    if (!hash) return null
+    const panel = document.getElementById(`panel-${hash}`)
+    return panel ? hash : null
+  }
+
+  document.querySelectorAll('.sidebar-item, .mobile-tab').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault()
+      const key = (el as HTMLElement).dataset.key
+      if (key) switchCategory(key)
+    })
+  })
+
+  const initialKey = getKeyFromHash()
+  if (initialKey) {
+    switchCategory(initialKey, false)
+  }
+
+  window.addEventListener('popstate', () => {
+    const key = getKeyFromHash()
+    if (key) {
+      switchCategory(key, false)
+    } else {
+      const first = document.querySelector('.category-panel') as HTMLElement
+      if (first?.dataset.category) {
+        switchCategory(first.dataset.category, false)
+      }
+    }
+  })
+</script>
+
+<style>
+  .category-panel {
+    display: none;
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .category-panel.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    animation: fadeIn 0.2s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

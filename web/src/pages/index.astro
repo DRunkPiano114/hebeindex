@@ -1,155 +1,110 @@
 ---
 import Layout from '../components/Layout.astro'
-import Sidebar from '../components/Sidebar.astro'
-import ContentTable from '../components/ContentTable'
-import { loadCategory } from '../data/loader'
+import { loadAllArtists } from '../data/loader'
 import { strings } from '../i18n/strings'
 
-const catKeys = ['personalMV', 'sheMV', 'concerts', 'variety', 'interviews', 'singles', 'collabs'] as const
-const fileIds: Record<string, number> = { personalMV: 2, sheMV: 7, concerts: 4, variety: 5, interviews: 6, singles: 3, collabs: 8 }
-
-const categories = catKeys.map(key => ({
-  key,
-  ...strings.categories[key],
-  fileId: fileIds[key],
-}))
-
-const data = categories.map(c => ({
-  ...c,
-  items: loadCategory(c.fileId),
-}))
-
-const total = data.reduce((sum, c) => sum + c.items.length, 0)
-
-const navItems = data.map(c => ({
-  key: c.key,
-  label: c.label,
-  sub: c.sub,
-  count: c.items.length,
-}))
+const artists = loadAllArtists()
 ---
 
-<Layout title={strings.siteTitle}>
-  <Sidebar slot="sidebar" items={navItems} total={total} />
+<Layout title={strings.siteName} hasSidebar={false}>
+  <div class="landing">
+    <header class="landing-header">
+      <h1 class="font-display" style="font-size: 36px; font-weight: 400; letter-spacing: -0.01em;">
+        {strings.siteName}
+      </h1>
+      <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">
+        {strings.footerText}
+      </p>
+    </header>
 
-  {data.map((cat, i) => (
-    <div
-      class:list={['category-panel', { active: i === 0 }]}
-      id={`panel-${cat.key}`}
-      data-category={cat.key}
-    >
-      <section style="padding: 24px 0 16px; flex-shrink: 0;">
-        <h2 class="font-display" style="font-size: 28px; font-weight: 400; margin-bottom: 4px;">
-          {cat.label}
-        </h2>
-        <p style="color: var(--text-secondary); font-size: 13px; letter-spacing: 0.03em;">
-          {cat.sub}
-        </p>
-      </section>
-
-      {i === 0 ? (
-        <ContentTable client:load items={cat.items} searchPlaceholder={cat.search} />
-      ) : (
-        <ContentTable client:idle items={cat.items} searchPlaceholder={cat.search} />
-      )}
+    <div class="artist-grid">
+      {artists.map(artist => (
+        <a href={`/${artist.slug}/`} class="artist-card">
+          <div class="artist-card-name font-display">{artist.names.primary}</div>
+          <div class="artist-card-english">{artist.names.english}</div>
+          <div class="artist-card-meta">
+            {[artist.birthYear, artist.genre, artist.awards[0]].filter(Boolean).join(' · ')}
+          </div>
+          <div class="artist-card-cats">
+            {artist.categories.length} 分類
+          </div>
+        </a>
+      ))}
     </div>
-  ))}
+  </div>
 </Layout>
 
-<script>
-  function switchCategory(key: string, pushState = true) {
-    // Update panels
-    document.querySelectorAll('.category-panel').forEach(el => {
-      const panel = el as HTMLElement
-      if (panel.dataset.category === key) {
-        panel.classList.add('active')
-      } else {
-        panel.classList.remove('active')
-      }
-    })
-
-    // Update sidebar items
-    document.querySelectorAll('.sidebar-item').forEach(el => {
-      const link = el as HTMLElement
-      if (link.dataset.key === key) {
-        link.classList.add('active')
-      } else {
-        link.classList.remove('active')
-      }
-    })
-
-    // Update mobile tabs
-    document.querySelectorAll('.mobile-tab').forEach(el => {
-      const tab = el as HTMLElement
-      if (tab.dataset.key === key) {
-        tab.classList.add('active')
-      } else {
-        tab.classList.remove('active')
-      }
-    })
-
-    // Update URL hash
-    if (pushState) {
-      history.pushState(null, '', `#${key}`)
-    }
-  }
-
-  function getKeyFromHash(): string | null {
-    const hash = window.location.hash.slice(1)
-    if (!hash) return null
-    const panel = document.getElementById(`panel-${hash}`)
-    return panel ? hash : null
-  }
-
-  // Intercept sidebar/tab clicks
-  document.querySelectorAll('.sidebar-item, .mobile-tab').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault()
-      const key = (el as HTMLElement).dataset.key
-      if (key) switchCategory(key)
-    })
-  })
-
-  // Handle initial hash
-  const initialKey = getKeyFromHash()
-  if (initialKey) {
-    switchCategory(initialKey, false)
-  }
-
-  // Handle browser back/forward
-  window.addEventListener('popstate', () => {
-    const key = getKeyFromHash()
-    if (key) {
-      switchCategory(key, false)
-    } else {
-      // Default to first category
-      const first = document.querySelector('.category-panel') as HTMLElement
-      if (first?.dataset.category) {
-        switchCategory(first.dataset.category, false)
-      }
-    }
-  })
-</script>
-
 <style>
-  .category-panel {
-    display: none;
-    opacity: 0;
-    transform: translateY(4px);
+  .landing {
+    padding: 48px 32px;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow-y: auto;
+    height: 100%;
   }
 
-  .category-panel.active {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    flex: 1;
-    animation: fadeIn 0.2s ease forwards;
+  .landing-header {
+    margin-bottom: 40px;
   }
 
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .artist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .artist-card {
+    display: block;
+    padding: 28px 24px;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--divider);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .artist-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(180, 83, 9, 0.08);
+  }
+
+  .artist-card-name {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .artist-card-english {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .artist-card-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .artist-card-cats {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 768px) {
+    .landing {
+      padding: 24px 16px;
+    }
+
+    .artist-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

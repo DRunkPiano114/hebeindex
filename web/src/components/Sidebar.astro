@@ -12,18 +12,20 @@ interface Props {
   items: NavItem[]
   total: number
   activeKey?: string
+  artistName: string
+  artistEnglish: string
 }
 
-const { items, total, activeKey = items[0]?.key } = Astro.props
+const { items, total, activeKey = items[0]?.key, artistName, artistEnglish } = Astro.props
 ---
 
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="font-display" style="font-size: 28px; font-weight: 400; line-height: 1.2; letter-spacing: -0.01em;">
-      {strings.sidebarBrand}
+      {artistName}
     </div>
     <div class="font-display" style="font-size: 14px; color: var(--text-secondary); font-style: italic; margin-top: 2px;">
-      {strings.sidebarSubtitle}
+      {artistEnglish} Archive
     </div>
     <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; letter-spacing: 0.04em;">
       共收錄 <span class="font-display" style="font-size: 14px; color: var(--accent); font-weight: 500;">{total}</span> 條
