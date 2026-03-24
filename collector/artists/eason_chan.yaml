@@ -1,0 +1,898 @@
+artist:
+  names:
+    primary: "陈奕迅"
+    english: "Eason Chan"
+    aliases: ["Eason", "奕迅", "陳奕迅", "E神"]
+  official_channels:
+    - "Eason Chan"
+    - "Eason Chan - Topic"
+    - "陈奕迅 - 主题"
+    - "陳奕迅 - 主題"
+    - "Universal Music Hong Kong"
+    - "環球音樂 Universal Music Hong Kong"
+    - "環球唱片 Universal Music"
+    - "英皇娱乐 EEG"
+    - "Emperor Entertainment"
+    - "EEG Music"
+    - "EAS Music"
+    - "Pathe Records"
+    - "新藝寶唱片"
+  labels: ["环球音乐", "Universal Music", "英皇娱乐", "Emperor Entertainment Group", "华星唱片", "Capital Artists", "新艺宝唱片", "Pathe Records"]
+  channels:
+    - platform: youtube
+      id: "UCnafe6M9Itwt08RFI51L6mw"
+      name: "Eason Chan"
+  birth_year: 1974
+  genre: "Cantopop / Mandopop"
+  awards:
+    - "第14届金曲奖最佳国语男演唱人＋最佳国语专辑（2003）"
+    - "第20届金曲奖最佳国语专辑（2009）"
+    - "第26届金曲奖最佳国语男歌手（2015）"
+    - "第29届金曲奖最佳国语男歌手＋年度专辑（2018）"
+    - "十大中文金曲最优秀流行男歌手（2005-2017连续13年）"
+    - "叱咤乐坛男歌手金奖（10次）"
+    - "叱咤乐坛我最喜爱的男歌手（9次）"
+  social_links:
+    facebook: "https://www.facebook.com/EasonChanOfficial/"
+    instagram: "https://www.instagram.com/mreasonchan/"
+    youtube: "https://www.youtube.com/@easonchan"
+    weibo: "https://weibo.com/easonchanyickshun"
+
+discography:
+  solo_albums:
+    - name: "陈奕迅"
+      year: 1996
+      tracks:
+        - "时代曲"
+        - "伤信"
+        - "游离份子"
+        - "我怕你不肯"
+        - "有意无意"
+        - "安守本份"
+        - "爱情幼稚"
+        - "从未痴心"
+        - "其实我记得"
+        - "当心中有恋爱感觉"
+    - name: "一滴眼泪"
+      year: 1997
+      tracks:
+        - "一滴眼泪"
+        - "拜楞"
+        - "爱到疯"
+        - "永远都天明"
+        - "情深怎么办"
+        - "我怎么可以哭"
+        - "学会爱"
+        - "Style"
+        - "二个人的夜晚"
+        - "感情约"
+    - name: "与我常在"
+      year: 1997
+      tracks:
+        - "现场直播"
+        - "与我常在"
+        - "爱没有左右"
+        - "生命有几好"
+        - "抱拥这分钟"
+        - "那一夜有没有说"
+        - "伴游"
+        - "跟我走好吗"
+        - "今天等我来"
+        - "敌人"
+    - name: "我的快乐时代"
+      year: 1998
+      tracks:
+        - "我的快乐时代"
+        - "我甚么都没有"
+        - "天下无双"
+        - "黄金时代"
+        - "愈想愈无谓"
+        - "相信相依"
+        - "两种讲法"
+        - "请相信我"
+        - "反高潮"
+    - name: "酝酿"
+      year: 1998
+      tracks:
+        - "预感"
+        - "酝酿"
+        - "摊开双手"
+        - "换季"
+        - "爱的傀儡"
+        - "感动"
+        - "我终于放开了她"
+        - "好聚好散"
+        - "宠爱"
+        - "La Mour"
+        - "Taipei City"
+        - "预感 (Reprise)"
+    - name: "天佑爱人"
+      year: 1999
+      tracks:
+        - "昨日"
+        - "今日"
+        - "每一个明天"
+        - "眼眉调"
+        - "第五个现代化"
+        - "快高长大"
+        - "如果这一秒钟你跟我讲你不爱我"
+        - "我的世界末日"
+        - "贝多芬与我"
+    - name: "幸福"
+      year: 1999
+      tracks:
+        - "幸福摩天轮"
+        - "飘飘飘飘"
+        - "时光倒流二十年"
+        - "忽然难过"
+        - "专家话"
+        - "有了你"
+        - "春光乍泄"
+        - "改造人"
+        - "垃圾"
+        - "非走不可"
+        - "超人的主题曲"
+    - name: "婚礼的祝福"
+      year: 1999
+      tracks:
+        - "婚礼的祝福"
+        - "拔河"
+        - "我的开始在这里"
+        - "转机"
+        - "My Girl"
+        - "掏空"
+        - "伤心证明书"
+        - "1个2个3个4个"
+        - "Just Between The Two of Us"
+        - "存在"
+    - name: "Nothing Really Matters"
+      year: 2000
+      tracks:
+        - "送院途中"
+        - "黑夜不再来"
+        - "美丽有罪"
+        - "戏迷情人"
+        - "和平饭店"
+        - "我感激"
+        - "到此一游"
+        - "当这地球没有花"
+        - "Made In Hong Kong"
+        - "爱上你是我眼睛的错"
+    - name: "打得火热"
+      year: 2000
+      tracks:
+        - "K歌之王"
+        - "打得火热"
+        - "新广告歌"
+        - "低等动物"
+        - "绵绵"
+        - "美丽谎言"
+        - "吹微风"
+        - "活跃症"
+        - "温室效应"
+        - "下周同样时间"
+    - name: "反正是我"
+      year: 2001
+      tracks:
+        - "Because You're Good To Me"
+        - "低等动物"
+        - "不如这样"
+        - "爱是怀疑"
+        - "我也不会那样做"
+        - "K歌之王"
+        - "没有你"
+        - "冤家"
+        - "全世界失眠"
+        - "Good Time"
+    - name: "Shall We Dance? Shall We Talk!"
+      year: 2001
+      tracks:
+        - "Shall We Dance"
+        - "Shall We Talk"
+        - "2001太空漫游"
+        - "失恋太少"
+        - "单车"
+        - "天使的礼物"
+        - "Eason's Angel"
+        - "怪物"
+        - "孤独探戈"
+        - "信心花舍"
+        - "黑暗中漫舞"
+    - name: "The Easy Ride"
+      year: 2001
+      tracks:
+        - "阿士匹灵"
+        - "阳性反应"
+        - "冲口而出"
+        - "大开眼戒"
+        - "我不好爱"
+        - "热带雨林"
+        - "人工智能"
+        - "结束开始"
+        - "活着多好"
+        - "他一个人"
+        - "不知所谓"
+    - name: "Special Thanks To..."
+      year: 2002
+      tracks:
+        - "你的背包"
+        - "谢谢侬"
+        - "男人的错"
+        - "你会不会"
+        - "故事"
+        - "想哭"
+        - "人造卫星"
+        - "没有手机的日子"
+        - "跳蚤市场"
+        - "狂人日记"
+        - "给爱丽斯"
+    - name: "The Line-Up"
+      year: 2002
+      tracks:
+        - "心里有鬼"
+        - "我有我爱你"
+        - "明年今日"
+        - "人来人往"
+        - "季军"
+        - "随意门"
+        - "1874"
+        - "防不胜防"
+        - "两名男子街头相遇"
+        - "黑面"
+    - name: "黑白灰"
+      year: 2003
+      tracks:
+        - "阿怪"
+        - "我们都寂寞"
+        - "兄妹"
+        - "十年"
+        - "要你的"
+        - "世界"
+        - "谢谢"
+        - "像一句广告"
+        - "寂寞奏鸣曲"
+        - "Last Order"
+    - name: "Live For Today"
+      year: 2003
+      tracks:
+        - "幸灾乐祸"
+        - "Katrina"
+        - "十面埋伏"
+        - "呀边个边个"
+        - "小孩不懂怕"
+        - "谎言"
+        - "真相"
+        - "猜情寻"
+        - "忘记歌词"
+        - "New Order"
+        - "岁月如歌"
+    - name: "U87"
+      year: 2005
+      tracks:
+        - "烂"
+        - "阿牛"
+        - "夕阳无限好"
+        - "6月16日 晴"
+        - "浮夸"
+        - "葡萄成熟时"
+        - "三个人的探戈"
+        - "不良嗜好"
+        - "怕死"
+        - "大个女"
+        - "新美人主义"
+        - "遇见了你"
+    - name: "怎么样"
+      year: 2005
+      tracks:
+        - "不能再等待"
+        - "对不起 谢谢"
+        - "Hippie"
+        - "不然你要我怎么样"
+        - "不睡"
+        - "一夜销魂"
+        - "浮城"
+        - "早开的长途班"
+        - "听听"
+        - "人神斗"
+    - name: "Life Continues..."
+      year: 2006
+      tracks:
+        - "低调"
+        - "人车志"
+        - "最佳损友"
+        - "暴殄天物"
+        - "落花流水"
+        - "大得太快"
+        - "想听"
+    - name: "What's Going On...?"
+      year: 2006
+      tracks:
+        - "裙下之臣"
+        - "最后的嬉皮士"
+        - "白玫瑰"
+        - "黑择明"
+        - "富士山下"
+        - "不如不见"
+        - "心深伤透"
+        - "解药"
+        - "天公地道"
+        - "粤语残片"
+    - name: "认了吧"
+      year: 2007
+      tracks:
+        - "烟味"
+        - "淘汰"
+        - "快乐男生"
+        - "红玫瑰"
+        - "月黑风高"
+        - "爱情转移"
+        - "好久不见"
+        - "爱是一本书"
+        - "第一个雅皮士"
+        - "白色球鞋"
+        - "月球上的人"
+    - name: "Listen to Eason Chan"
+      year: 2007
+      tracks:
+        - "玛利奥派对"
+        - "热岛小夜曲"
+        - "闪"
+        - "演唱会"
+        - "滑铁卢车站"
+        - "Crying in the Party"
+        - "狂热革命"
+        - "变色龙"
+        - "时代巨轮"
+        - "乜嘢啫"
+        - "兄弟"
+    - name: "不想放手"
+      year: 2008
+      tracks:
+        - "路一直都在"
+        - "独居动物"
+        - "倒带人生"
+        - "Aren't You Glad"
+        - "7"
+        - "不要说话"
+        - "漂亮小姐"
+        - "臭美"
+        - "土星环"
+        - "然后怎样"
+    - name: "H3M"
+      year: 2009
+      tracks:
+        - "Allegro, Opus 3.3 a.m."
+        - "还有什么可以送给你"
+        - "于心有愧"
+        - "今天只做一件事"
+        - "一个旅人"
+        - "七百年后"
+        - "Life Goes On"
+        - "太阳照常升起"
+        - "不来也不去"
+        - "沙龙"
+    - name: "上五楼的快活"
+      year: 2009
+      tracks:
+        - "在你身边"
+        - "这样的一个麻烦"
+        - "多少"
+        - "Nothing Ever Happened"
+        - "你为什么哭了呢"
+        - "我甲你"
+        - "谋情害命"
+        - "心的距离"
+        - "床头灯"
+        - "给你"
+        - "从何说起"
+    - name: "Time Flies"
+      year: 2010
+      tracks:
+        - "无人之境"
+        - "大人"
+        - "一丝不挂"
+        - "陀飞轮"
+        - "心腹"
+        - "味之素"
+    - name: "Taste the Atmosphere"
+      year: 2010
+      tracks:
+        - "Welcome to the Future"
+        - "讲男讲女"
+        - "叶问风中转"
+        - "花花世界"
+        - "我杯茶"
+        - "超错"
+    - name: "?"
+      year: 2011
+      tracks:
+        - "孤独患者"
+        - "哎呀咿呀"
+        - "看穿"
+        - "吟游诗人"
+        - "张氏情歌"
+        - "Baby Song"
+        - "听一千遍后"
+        - "内疚"
+        - "还要不要走"
+        - "积木"
+        - "神奇化妆师"
+        - "Muffin Man"
+    - name: "Stranger Under My Skin"
+      year: 2011
+      tracks:
+        - "六月飞霜"
+        - "Stranger Under My Skin"
+        - "最后派对"
+        - "苦瓜"
+        - "沼气"
+        - "My Private Christmas Song"
+    - name: "...3mm"
+      year: 2012
+      tracks:
+        - "重口味"
+        - "非礼"
+        - "Class"
+        - "碌卡"
+        - "笑死朕"
+        - "蚊"
+        - "Let It Out"
+        - "习惯说"
+        - "信任"
+        - "完"
+    - name: "The Key"
+      year: 2013
+      tracks:
+        - "主旋律"
+        - "告别娑婆"
+        - "斯德哥尔摩情人"
+        - "任我行"
+        - "远在咫尺"
+        - "失忆蝴蝶"
+        - "床头床尾"
+        - "阿猫阿狗"
+    - name: "Rice & Shine"
+      year: 2014
+      tracks:
+        - "娱乐天空"
+        - "四季圈"
+        - "愚人快乐"
+        - "不如承诺来的简单"
+        - "对面"
+        - "放弃治疗"
+        - "时光隧道"
+        - "可以了"
+        - "阴天快乐"
+        - "你给我听好"
+    - name: "准备中"
+      year: 2015
+      tracks:
+        - "老细我撇先"
+        - "无条件"
+        - "人生马拉松"
+        - "黑洞"
+        - "心烧"
+        - "喜欢一个人"
+        - "万圣节的一个传说"
+        - "起点·终站"
+        - "一个灵魂的独白"
+        - "梦的可能"
+        - "异梦"
+    - name: "C'mon in~"
+      year: 2017
+      tracks:
+        - "放"
+        - "收心操"
+        - "海胆"
+        - "谁来剪月光"
+        - "床上的黑洞"
+        - "右上角"
+        - "之外"
+        - "傅科摆"
+        - "零下几分钟"
+        - "披风"
+    - name: "L.O.V.E."
+      year: 2018
+      tracks:
+        - "破坏王"
+        - "海里睡人"
+        - "渐渐"
+        - "敬烟"
+        - "蠢"
+        - "疯狂的朋友"
+        - "R U N"
+        - "龙舌兰"
+        - "我们万岁"
+        - "与你常在"
+        - "可一可再"
+    - name: "CHIN UP!"
+      year: 2023
+      tracks:
+        - "尘大师"
+        - "人啊人"
+        - "焦焦焦"
+        - "社交恐惧癌"
+        - "空城记"
+        - "是但求其爱"
+        - "盲哑嫁"
+        - "致明日的舞"
+
+  ost_singles:
+    - name: "黑夜不再来"
+      source: "十二夜"
+      year: 2000
+    - name: "活着多好"
+      source: "常在我心"
+      year: 2001
+    - name: "岁月如歌"
+      source: "冲上云霄"
+      year: 2003
+    - name: "爱情转移"
+      source: "爱情呼叫转移"
+      year: 2007
+    - name: "兄弟"
+      source: "兄弟之生死同盟"
+      year: 2007
+    - name: "因为爱情"
+      source: "将爱情进行到底"
+      year: 2011
+    - name: "稳稳的幸福"
+      source: "越来越好之村晚"
+      year: 2013
+    - name: "陪你度过漫长岁月"
+      source: "陪安东尼度过漫长岁月"
+      year: 2015
+    - name: "在这个世界相遇"
+      source: "大鱼海棠"
+      year: 2016
+    - name: "让我留在你身边"
+      source: "摆渡人"
+      year: 2016
+    - name: "谁来剪月光"
+      source: "短暂的婚姻"
+      year: 2017
+    - name: "我们"
+      source: "后来的我们"
+      year: 2018
+    - name: "不期而遇的夏天"
+      source: "不期而遇的夏天"
+      year: 2021
+    - name: "孤勇者"
+      source: "英雄联盟：双城之战"
+      year: 2021
+    - name: "这样很好"
+      source: "英雄联盟：双城之战 第二季"
+      year: 2024
+
+  variety_show_singles:
+    - name: "十年"
+      source: "我是歌手 第三季"
+      year: 2015
+    - name: "积木"
+      source: "中国新歌声 第二季"
+      year: 2017
+    - name: "披风"
+      source: "中国新歌声 第二季"
+      year: 2017
+    - name: "床头灯"
+      source: "中国新歌声 第二季"
+      year: 2017
+    - name: "谁来剪月光"
+      source: "中国新歌声 第二季"
+      year: 2017
+    - name: "因为爱情"
+      source: "央视春晚"
+      year: 2012
+    - name: "孤勇者"
+      source: "央视春晚"
+      year: 2025
+
+  concerts:
+    - name: "陈奕迅大个唱"
+      years: "1999"
+      aliases: ["Big Live 99"]
+      venues: ["香港红馆"]
+    - name: "The Easy Ride 陈奕迅演唱会"
+      years: "2001"
+      aliases: ["The Easy Ride Live"]
+      venues: ["香港红馆"]
+    - name: "Third Encounter 第三类接触 演唱会"
+      years: "2003"
+      aliases: ["第三类接触"]
+      venues: ["香港红馆"]
+    - name: "Get a Life 陈奕迅演唱会"
+      years: "2006"
+      aliases: ["Get a Life Live"]
+      venues: ["香港红馆", "吉隆坡"]
+    - name: "Eason's Moving On Stage 世界巡回演唱会"
+      years: "2007-2009"
+      aliases: ["Moving On Stage"]
+      venues: ["香港红馆", "台北", "广州", "上海", "北京", "深圳", "重庆", "新加坡", "洛杉矶", "旧金山", "澳门"]
+    - name: "九十分钟演唱会"
+      years: "2009-2010"
+      aliases: ["Ninety Minutes of Bliss"]
+      venues: ["南京", "上海", "北京"]
+    - name: "DUO 陈奕迅世界巡回演唱会"
+      years: "2010-2012"
+      aliases: ["DUO World Tour"]
+      venues: ["香港红馆", "伦敦", "曼彻斯特", "鹿特丹", "新加坡", "温哥华", "多伦多", "北京", "上海", "台北"]
+    - name: "EASON's LIFE 世界巡回演唱会"
+      years: "2013-2014"
+      aliases: ["Eason's Life World Tour"]
+      venues: ["香港红馆", "台北", "高雄", "墨尔本", "悉尼", "吉隆坡", "曼谷", "新加坡", "多伦多", "圣何塞", "温哥华", "伦敦", "巴黎", "澳门", "成都", "广州", "北京", "上海"]
+    - name: "Another Eason's Life 世界巡回演唱会"
+      years: "2015-2016"
+      aliases: ["Another Eason's Life World Tour"]
+      venues: ["长沙", "南京", "悉尼", "墨尔本", "拉斯维加斯", "蒙特利尔", "纽约", "圣何塞", "温哥华", "北京鸟巢"]
+    - name: "Eason Says C'mon in~ Tour"
+      years: "2017"
+      aliases: ["C'mon in~ Tour"]
+      venues: ["北京", "重庆", "上海", "广州", "香港", "阿姆斯特丹", "柏林", "巴黎", "伦敦", "纽约", "多伦多", "温哥华", "台北", "高雄", "新加坡"]
+    - name: "L.O.V.E. is L.I.V.E. 慈善演唱会"
+      years: "2018"
+      aliases: []
+      venues: ["香港中环海滨"]
+    - name: "Live is so much better with Music 慈善音乐会"
+      years: "2020"
+      aliases: ["日出日落慈善音乐会"]
+      venues: ["线上直播"]
+    - name: "Fear and Dreams 世界巡回演唱会"
+      years: "2022-2025"
+      aliases: ["FEAR and DREAMS World Tour", "F&D"]
+      venues: ["香港红馆", "新加坡", "吉隆坡", "台北", "纽约", "多伦多", "芝加哥", "洛杉矶", "旧金山", "温哥华", "澳门", "上海", "成都", "广州", "西安", "南京", "武汉", "杭州", "深圳", "北京", "悉尼", "伦敦", "横滨"]
+
+  variety_shows:
+    - name: "中国新歌声"
+      network: "浙江卫视"
+    - name: "中国最强音"
+      network: "湖南卫视"
+    - name: "我是歌手"
+      network: "湖南卫视"
+    - name: "鲁豫有约"
+      network: ""
+    - name: "康熙来了"
+      network: "中天电视"
+    - name: "快乐大本营"
+      network: "湖南卫视"
+    - name: "天天向上"
+      network: "湖南卫视"
+    - name: "央视春晚"
+      network: "CCTV"
+    - name: "叱咤乐坛流行榜颁奖典礼"
+      network: "商业电台"
+    - name: "十大中文金曲颁奖典礼"
+      network: "香港电台"
+    - name: "劲歌金曲颁奖典礼"
+      network: "TVB"
+    - name: "金曲奖"
+      network: ""
+    - name: "大牌驾到"
+      network: ""
+    - name: "东方卫视跨年演唱会"
+      network: "东方卫视"
+
+  collaborators:
+    - name: "王菲"
+      songs: ["因为爱情"]
+    - name: "张学友"
+      songs: ["同舟之情"]
+    - name: "杨千嬅"
+      songs: ["其实我记得"]
+    - name: "莫文蔚"
+      songs: ["我杯茶"]
+    - name: "萨顶顶"
+      songs: ["Welcome to the Future"]
+    - name: "露云娜"
+      songs: ["讲男讲女"]
+    - name: "容祖儿"
+      songs: ["美好世界"]
+    - name: "谢安琪"
+      songs: ["青春无晦"]
+    - name: "刘德华"
+      songs: ["兄弟"]
+    - name: "蔡依林"
+      songs: ["Fight as One"]
+    - name: "韩红"
+      songs: ["十年"]
+    - name: "谢霆锋"
+      songs: ["细路"]
+    - name: "梅艳芳"
+      songs: ["同声一哭"]
+
+  venues:
+    - "红馆"
+    - "紅館"
+    - "香港体育馆"
+    - "Hong Kong Coliseum"
+    - "小巨蛋"
+    - "台北小巨蛋"
+    - "Taipei Arena"
+    - "体育馆"
+    - "體育館"
+    - "巨蛋"
+    - "鸟巢"
+    - "国家体育场"
+    - "O2 Arena"
+    - "Barclays Center"
+    - "Chase Center"
+    - "Galaxy Arena"
+    - "威尼斯人"
+
+  interview_channels:
+    - "鲁豫有约"
+    - "魯豫有約"
+    - "志云饭局"
+    - "大牌驾到"
+    - "TVB"
+    - "RTHK"
+    - "商台"
+    - "有线新闻"
+    - "明报"
+    - "南华早报"
+    - "苹果日报"
+    - "东方日报"
+    - "GQ"
+    - "ELLE"
+    - "Vogue"
+    - "BAZAAR"
+    - "Esquire"
+    - "新浪娱乐"
+    - "腾讯娱乐"
+    - "搜狐娱乐"
+    - "ETtoday"
+    - "TVBS"
+
+  notable_interviewers:
+    - "陈鲁豫"
+    - "陈志云"
+    - "华少"
+
+  western_artist_blacklist:
+    - "rick astley"
+    - "taylor swift"
+    - "ed sheeran"
+    - "adele"
+    - "beyonce"
+    - "beyoncé"
+    - "ariana grande"
+    - "billie eilish"
+    - "dua lipa"
+    - "lady gaga"
+    - "katy perry"
+    - "justin bieber"
+    - "bruno mars"
+    - "drake"
+    - "eminem"
+    - "rihanna"
+    - "shakira"
+    - "the weeknd"
+    - "post malone"
+    - "harry styles"
+    - "olivia rodrigo"
+    - "doja cat"
+    - "miley cyrus"
+    - "selena gomez"
+    - "charlie puth"
+    - "maroon 5"
+    - "coldplay"
+    - "imagine dragons"
+    - "one direction"
+    - "bts"
+    - "blackpink"
+    - "twice"
+    - "stray kids"
+    - "aespa"
+    - "newjeans"
+    - "ive"
+    - "nct"
+    - "exo"
+    - "red velvet"
+    - "tyler the creator"
+    - "frank ocean"
+    - "kanye west"
+    - "travis scott"
+    - "lana del rey"
+
+  other_chinese_artist_blacklist:
+    - "周杰伦"
+    - "周杰倫"
+    - "林俊杰"
+    - "林俊傑"
+    - "张惠妹"
+    - "張惠妹"
+    - "王力宏"
+    - "陶喆"
+    - "萧敬腾"
+    - "蕭敬騰"
+    - "李荣浩"
+    - "李榮浩"
+    - "邓紫棋"
+    - "鄧紫棋"
+    - "华晨宇"
+    - "華晨宇"
+    - "薛之谦"
+    - "薛之謙"
+    - "毛不易"
+    - "周深"
+    - "张碧晨"
+    - "張碧晨"
+    - "李宇春"
+    - "张靓颖"
+    - "張靚穎"
+    - "A-Lin"
+    - "刘若英"
+    - "劉若英"
+    - "孙燕姿"
+    - "孫燕姿"
+    - "梁静茹"
+    - "梁靜茹"
+    - "田馥甄"
+    - "汪峰"
+    - "李健"
+    - "那英"
+    - "任贤齐"
+    - "任賢齊"
+    - "古巨基"
+    - "李克勤"
+    - "张敬轩"
+    - "張敬軒"
+    - "方大同"
+    - "王菲"
+    - "韩红"
+    - "韓紅"
+    - "谭维维"
+    - "譚維維"
+    - "黄丽玲"
+    - "黃麗玲"
+
+  wrong_context_patterns:
+    - "eason jordan"
+    - "eason furniture"
+    - "eason school supplies"
+
+categories:
+  - id: 2
+    key: "personal_mv"
+    label: "個人MV"
+    sub: "Official MV & Lyric Video"
+    output_path: "MV/个人MV.md"
+    description: "按专辑分组，每首MV一行，含：歌名、链接、平台、发布日期、播放量、导演/频道、简介。"
+  - id: 3
+    key: "ost_singles"
+    label: "影視單曲"
+    sub: "OST & Singles"
+    output_path: "歌曲与合作/影视单曲.md"
+    description: "影视主题曲、官方数字单曲等非专辑收录作品。"
+  - id: 4
+    key: "concerts"
+    label: "演唱會"
+    sub: "Concert & Live"
+    output_path: "演唱会/演唱会.md"
+    description: "个人演唱会，区分官方影像、现场录像、精彩片段。"
+  - id: 5
+    key: "variety"
+    label: "綜藝節目"
+    sub: "TV Shows & Variety"
+    output_path: "节目与访谈/综艺节目.md"
+    description: "按节目分组：中国新歌声（逐期）、其他综艺、历史片段。每条注明原唱。"
+  - id: 6
+    key: "interviews"
+    label: "採訪訪談"
+    sub: "Interviews & Press"
+    output_path: "节目与访谈/采访访谈.md"
+    description: "专访、采访、金曲奖访谈等。"
+  - id: 7
+    key: "collabs"
+    label: "合唱合作"
+    sub: "Collabs & Features"
+    output_path: "歌曲与合作/合唱合作.md"
+    description: "与其他歌手的合唱、合作视频。"
+
+classification:
+  priority:
+    - "personal_mv"
+    - "ost_singles"
+    - "collabs"
+    - "concerts"
+    - "variety"
+    - "interviews"
